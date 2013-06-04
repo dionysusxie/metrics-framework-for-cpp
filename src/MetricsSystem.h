@@ -10,6 +10,8 @@
 
 #include <boost/shared_ptr.hpp>
 #include "gmf_common.h"
+#include "MetricsSource.h"
+#include "MetricsSink.h"
 
 
 namespace gmf {
@@ -20,6 +22,11 @@ public:
 
 public:
     virtual ~MetricsSystem();
+    bool config();
+    bool registerSource(boost::shared_ptr<MetricsSource>);
+    bool registerSink(boost::shared_ptr<MetricsSink>);
+    void start();
+    void stop();
 
 private:
     MetricsSystem();
