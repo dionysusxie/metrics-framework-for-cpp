@@ -9,6 +9,7 @@
 #define GMF_COMMON_H_
 
 #include <string>
+#include <stddef.h>
 
 
 namespace gmf {
