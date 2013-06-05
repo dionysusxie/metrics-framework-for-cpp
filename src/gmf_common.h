@@ -13,6 +13,12 @@
 #include <allyes-log.h>
 
 
+#define METRICS_LOG_DEBUG(format_string, ...) LOG_DEBUG_CTX(gmf::METRICS_LOG_CONTEXT, format_string, ##__VA_ARGS__)
+#define METRICS_LOG_INFO(format_string, ...) LOG_INFO_CTX(gmf::METRICS_LOG_CONTEXT, format_string, ##__VA_ARGS__)
+#define METRICS_LOG_WARNING(format_string, ...) LOG_WARNING_CTX(gmf::METRICS_LOG_CONTEXT, format_string, ##__VA_ARGS__)
+#define METRICS_LOG_ERROR(format_string, ...) LOG_ERROR_CTX(gmf::METRICS_LOG_CONTEXT, format_string, ##__VA_ARGS__)
+
+
 namespace gmf {
 
 enum MetricType {
@@ -20,6 +26,8 @@ enum MetricType {
     GAUGE,       // An arbitrary varying metric
     MAX
 };
+
+extern const std::string METRICS_LOG_CONTEXT;
 
 }
 

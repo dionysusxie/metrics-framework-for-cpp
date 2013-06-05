@@ -44,7 +44,7 @@ bool MetricsSystem::registerSink(boost::shared_ptr<sink::MetricsSink>) {
 }
 
 void MetricsSystem::start() {
-
+    METRICS_LOG_INFO("system start");
 }
 
 void MetricsSystem::stop() {

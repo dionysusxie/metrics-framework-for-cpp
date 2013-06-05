@@ -74,5 +74,6 @@ int main(int argc, char* argv[]) {
         LOG_ERROR("Exception in main: %s", e.what());
     }
 
+    LOG_INFO("Exit now");
     return 0;
 }
