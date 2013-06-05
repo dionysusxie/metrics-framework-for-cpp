@@ -8,8 +8,8 @@ LIB_DIR = /usr/local/lib
 
 CXXFLAGS = -Wall -c -g -fpic
 
-LDFLAGS = -L$(LIB_DIR) 
-LDFLAGS += -lboost_thread -lboost_filesystem -lboost_system
+LDFLAGS = -L$(LIB_DIR)
+LDFLAGS += -lboost_thread -lboost_filesystem -lboost_system -lallyes-log
 LDFLAGS += -Wl,-E
 
 CC = g++

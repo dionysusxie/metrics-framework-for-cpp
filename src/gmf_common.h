@@ -10,6 +10,7 @@
 
 #include <string>
 #include <stddef.h>
+#include <allyes-log.h>
 
 
 namespace gmf {
