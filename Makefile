@@ -1,6 +1,6 @@
 # Top level makefile, the real shit is at src/Makefile
 
-TARGET = libgeneralmetricsframework.so
+TARGET = test
 
 default: $(TARGET)
 

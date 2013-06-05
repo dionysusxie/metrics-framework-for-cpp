@@ -1,7 +1,8 @@
-TARGET = libgeneralmetricsframework.so
+TARGET = test
 
 OBJECT_FILES = Updater.o MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o \
-	AbstractMetric.o MetricsSystem.o MetricsSource.o MetricsSink.o
+	AbstractMetric.o MetricsSystem.o MetricsSource.o MetricsSink.o \
+	test.o
 
 LIB_DIR = /usr/local/lib
 
@@ -11,15 +12,12 @@ LDFLAGS = -L$(LIB_DIR)
 LDFLAGS += -lboost_thread -lboost_filesystem -lboost_system
 LDFLAGS += -Wl,-E
 
-INSTALL_DIR = /usr/local/lib
-
 CC = g++
 
-.PHONY: clean install uninstall
-
+.PHONY: clean
 
 $(TARGET): $(OBJECT_FILES)
-	$(CC) -shared -o $(TARGET) $(OBJECT_FILES) $(LDFLAGS)
+	$(CC) -o $(TARGET) $(OBJECT_FILES) $(LDFLAGS)
 	@echo "Build successfully!"
 
 %.o : %.c
@@ -41,14 +39,6 @@ $(TARGET): $(OBJECT_FILES)
 	@rm -f $*.d.tmp
 
 -include $(OBJECT_FILES:.o=.d)
-	
+
 clean:
 	rm -rf $(TARGET) *.o *.d
-
-install: $(TARGET)
-	mkdir -p $(INSTALL_DIR)
-	cp $(TARGET) $(INSTALL_DIR)
-	
-uninstall:
-	rm $(INSTALL_DIR)/$(TARGET)
-	
