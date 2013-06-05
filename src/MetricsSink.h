@@ -9,6 +9,7 @@
 #define METRICSSINK_H_
 
 namespace gmf {
+namespace sink {
 
 class MetricsSink {
 public:
@@ -16,5 +17,7 @@ public:
     virtual ~MetricsSink();
 };
 
+} /* namespace sink */
 } /* namespace gmf */
+
 #endif /* METRICSSINK_H_ */

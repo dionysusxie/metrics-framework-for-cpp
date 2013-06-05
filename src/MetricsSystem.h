@@ -23,8 +23,8 @@ public:
 public:
     virtual ~MetricsSystem();
     bool config();
-    bool registerSource(boost::shared_ptr<MetricsSource>);
-    bool registerSink(boost::shared_ptr<MetricsSink>);
+    bool registerSource(boost::shared_ptr<source::MetricsSource>);
+    bool registerSink(boost::shared_ptr<sink::MetricsSink>);
     void start();
     void stop();
 

@@ -9,6 +9,7 @@
 #define METRICSSOURCE_H_
 
 namespace gmf {
+namespace source {
 
 class MetricsSource {
 public:
@@ -16,5 +17,7 @@ public:
     virtual ~MetricsSource();
 };
 
+} /* namespace source */
 } /* namespace gmf */
+
 #endif /* METRICSSOURCE_H_ */
