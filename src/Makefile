@@ -6,7 +6,7 @@ OBJECT_FILES = MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o \
 
 LIB_DIR = /usr/local/lib
 
-CXXFLAGS = -Wall -c -g -fpic
+CXXFLAGS = -Wall -c -g
 
 LDFLAGS = -L$(LIB_DIR)
 LDFLAGS += -lboost_thread -lboost_filesystem -lboost_system -lallyes-log

@@ -40,6 +40,7 @@ bool MetricsSystem::config() {
 // @note  If the name of the source to be registered already exists, false returned.
 bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
     if (src.get() == NULL) {
+        METRICS_LOG_WARNING("NULL ptr of the metrics-source to be registered");
         return false;
     }
 
