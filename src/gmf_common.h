@@ -11,6 +11,7 @@
 #include <string>
 #include <stddef.h>
 #include <allyes-log.h>
+#include <boost/shared_ptr.hpp>
 
 
 #define METRICS_LOG_DEBUG(format_string, ...) LOG_DEBUG_CTX(gmf::METRICS_LOG_CONTEXT, format_string, ##__VA_ARGS__)

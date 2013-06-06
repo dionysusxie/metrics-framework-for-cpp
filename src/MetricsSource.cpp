@@ -19,5 +19,10 @@ MetricsSource::~MetricsSource() {
     // TODO Auto-generated destructor stub
 }
 
+
+MetricsRecordPtr Test::getMetrics() {
+    return MetricsRecordPtr(new MetricsRecord("test", "just for testing"));
+}
+
 } /* namespace source */
 } /* namespace gmf */

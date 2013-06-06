@@ -17,6 +17,9 @@
 
 namespace gmf {
 
+class MetricsRecord;
+typedef boost::shared_ptr<MetricsRecord> MetricsRecordPtr;
+
 // An immutable snapshot of metrics with a timestamp
 class MetricsRecord: public BasicItem {
 public:
