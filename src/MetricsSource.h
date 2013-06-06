@@ -9,13 +9,18 @@
 #define METRICSSOURCE_H_
 
 #include "MetricsRecord.h"
+#include "gmf_common.h"
 
 namespace gmf {
 namespace source {
 
-class MetricsSource {
+class MetricsSource;
+typedef boost::shared_ptr<MetricsSource> MetricsSourcePtr;
+
+
+class MetricsSource: public BasicItem {
 public:
-    MetricsSource();
+    MetricsSource(const std::string& name, const std::string& desc);
     virtual ~MetricsSource();
 
 public:

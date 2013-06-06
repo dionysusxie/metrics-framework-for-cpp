@@ -9,6 +9,7 @@
 #define METRICSSYSTEM_H_
 
 #include <boost/shared_ptr.hpp>
+#include <map>
 #include "gmf_common.h"
 #include "MetricsSource.h"
 #include "MetricsSink.h"
@@ -24,7 +25,7 @@ public:
     virtual ~MetricsSystem();
 
     bool config();
-    bool registerSource(boost::shared_ptr<source::MetricsSource>);
+    bool registerSource(source::MetricsSourcePtr);
     bool registerSink(boost::shared_ptr<sink::MetricsSink>);
     void start();
     void stop();
@@ -34,6 +35,10 @@ private:
 
 private:
     static boost::shared_ptr<MetricsSystem> s_pSingleton;
+private:
+    // key: name of metrics source
+    // value: metrics source's ptr
+    std::map<std::string, source::MetricsSourcePtr> sources_;
 };
 
 } /* namespace gmf */

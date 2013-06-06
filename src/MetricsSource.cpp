@@ -10,7 +10,8 @@
 namespace gmf {
 namespace source {
 
-MetricsSource::MetricsSource() {
+MetricsSource::MetricsSource(const std::string& name, const std::string& desc):
+    BasicItem(name, desc) {
     // TODO Auto-generated constructor stub
 
 }

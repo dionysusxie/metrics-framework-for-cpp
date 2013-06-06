@@ -35,7 +35,21 @@ bool MetricsSystem::config() {
     return true;
 }
 
-bool MetricsSystem::registerSource(boost::shared_ptr<source::MetricsSource>) {
+// @param  src  A ptr to metrics-source to be registered.
+// @return  true if registered OK, otherwise false.
+// @note  If the name of the source to be registered already exists, false returned.
+bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
+    if (src.get() == NULL) {
+        return false;
+    }
+
+    bool registered_already = this->sources_.count(src->getName()) > 0;
+    if (registered_already) {
+        METRICS_LOG_WARNING("Source with the name %s already registered", src->getName().c_str());
+        return false;
+    }
+
+    this->sources_[src->getName()] = src;
     return true;
 }
 
