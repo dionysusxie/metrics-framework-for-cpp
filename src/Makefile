@@ -1,6 +1,6 @@
 TARGET = test
 
-OBJECT_FILES = Updater.o MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o \
+OBJECT_FILES = MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o \
 	AbstractMetric.o MetricsSystem.o MetricsSource.o MetricsSink.o gmf_common.o \
 	test.o
 
