@@ -48,9 +48,9 @@
 
 class StoreConf;
 typedef StoreConf* ptrStoreConf;
-typedef boost::shared_ptr<StoreConf> StoreConfPtr;
+typedef boost::shared_ptr<StoreConf> StoreConf_SPtr;
 typedef std::map<std::string, std::string> STR_STR_MAP;
-typedef std::map<std::string, StoreConfPtr> STR_CONF_MAP;
+typedef std::map<std::string, StoreConf_SPtr> STR_CONF_MAP;
 
 
 std::ostream& operator << (std::ostream& os, const StoreConf& storeConf);
@@ -68,10 +68,10 @@ public:
     // Return value is true if the key exists, and false if it doesn't.
     // This doesn't check for garbage ints or empty strings.
     // The return parameter is untouched if the key isn't found.
-    void getAllStores(std::vector<StoreConfPtr>& _return) const;
+    void getAllStores(std::vector<StoreConf_SPtr>& _return) const;
     void getAllKeys(std::vector<std::string>& _return) const;
     void getAllValues(STR_STR_MAP& _return) const;
-    bool getStore(const std::string& storeName, StoreConfPtr& _return) const;
+    bool getStore(const std::string& storeName, StoreConf_SPtr& _return) const;
     bool getInt(const std::string& intName, int& _return) const;
     bool getLong(const std::string& intName, long int& _return) const;
     bool getUnsigned(const std::string& intName, unsigned long int& _return) const;

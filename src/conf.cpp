@@ -63,7 +63,7 @@ StoreConf& StoreConf::operator = (const StoreConf& other) {
     return *this;
 }
 
-bool StoreConf::getStore(const string& storeName, StoreConfPtr& _return) const {
+bool StoreConf::getStore(const string& storeName, StoreConf_SPtr& _return) const {
     STR_CONF_MAP::const_iterator iter = stores.find(storeName);
     if (iter != stores.end()) {
         _return = iter->second;
@@ -86,7 +86,7 @@ void StoreConf::setParent(ptrStoreConf pParent) {
     parent = pParent;
 }
 
-void StoreConf::getAllStores(vector<StoreConfPtr>& _return) const {
+void StoreConf::getAllStores(vector<StoreConf_SPtr>& _return) const {
     for (STR_CONF_MAP::const_iterator iter = stores.begin(); iter != stores.end(); ++iter) {
         _return.push_back(iter->second);
     }
@@ -248,7 +248,7 @@ bool StoreConf::parseStore(queue<string>& raw_config, /*out*/ptrStoreConf parsed
             string store_name = line.substr(1, pos - 1);
             store_name = trim(store_name);
 
-            StoreConfPtr new_store(new StoreConf);
+            StoreConf_SPtr new_store(new StoreConf);
 
             if (parseStore(raw_config, new_store.get())) {
                 std::map<std::string, int>::iterator itor = repeated_item.find(store_name);
