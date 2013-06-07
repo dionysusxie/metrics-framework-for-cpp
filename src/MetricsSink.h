@@ -21,11 +21,12 @@ namespace sink {
 class MetricsSink;
 typedef boost::shared_ptr<MetricsSink> MetricsSinkPtr;
 
+
 class MetricsSink {
 public:
     static MetricsSinkPtr createSink(StoreConf_SPtr conf);
 public:
-    MetricsSink();
+    MetricsSink(const std::string& type);
     virtual ~MetricsSink();
 public:
     std::string getType() const;
@@ -36,7 +37,7 @@ protected:
     virtual void consumeRecords(std::queue<MetricsRecordPtr>) = 0;
 
 private:
-    std::string type_;
+    const std::string type_;
 
     // Queue of metrics records;
     // New metrics records would be lost if the queue is full.
@@ -50,6 +51,10 @@ private:
 
 
 class SinkToConsole: public MetricsSink {
+public:
+    static const std::string TYPE_TXT;
+public:
+    SinkToConsole();
 protected:
     virtual void consumeRecords(std::queue<MetricsRecordPtr>);
 };
