@@ -23,7 +23,8 @@ typedef boost::shared_ptr<MetricsRecord> MetricsRecordPtr;
 // An immutable snapshot of metrics with a timestamp
 class MetricsRecord: public BasicItem {
 public:
-    MetricsRecord(const std::string& name, const std::string& desc);
+    MetricsRecord(const std::string& name, const std::string& desc,
+            const std::string& ctx);
     virtual ~MetricsRecord();
 
 public:
@@ -31,6 +32,10 @@ public:
     std::string getContext() const;
     std::map<std::string, MetricTag> getTags() const;
 
+private:
+    const std::string context_;
+    const time_t timestamp_;
+    std::map<std::string, MetricTag> tags_;
 };
 
 } /* namespace gmf */

@@ -22,7 +22,7 @@ MetricsSource::~MetricsSource() {
 
 
 MetricsRecordPtr Test::getMetrics() {
-    return MetricsRecordPtr(new MetricsRecord("test", "just for testing"));
+    return MetricsRecordPtr(new MetricsRecord("test", "just for testing", "test"));
 }
 
 } /* namespace source */
