@@ -205,11 +205,13 @@ bool StoreConf::parseConfig(const string& filename) {
 //
 // Returns true if a valid entry was found
 bool StoreConf::parseStore(queue<string>& raw_config, /*out*/ptrStoreConf parsed_config) {
+
     std::map<std::string, int> repeated_item;
-    for(unsigned int i=0; i<sizeof(REPEATABLE_STORE)/sizeof(REPEATABLE_STORE[0]); ++i) {
+    for(unsigned int i = 0; i < sizeof(REPEATABLE_STORE) / sizeof(REPEATABLE_STORE[0]); ++i) {
         repeated_item[REPEATABLE_STORE[i]] = 0;
     }
     
+
     string line;
     while (!raw_config.empty()) {
 
