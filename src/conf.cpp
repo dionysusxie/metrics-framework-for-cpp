@@ -30,10 +30,8 @@ using namespace boost;
 using namespace std;
 
 static const std::string REPEATABLE_STORE[] = {
-    "log_store",
-    "report",
-    "pre_filter",
-    "post_filter",
+    "source",
+    "sink",
 };
 
 StoreConf::StoreConf():
@@ -65,7 +63,7 @@ StoreConf& StoreConf::operator = (const StoreConf& other) {
     return *this;
 }
 
-bool StoreConf::getStore(const string& storeName, pStoreConf& _return) const {
+bool StoreConf::getStore(const string& storeName, StoreConfPtr& _return) const {
     STR_CONF_MAP::const_iterator iter = stores.find(storeName);
     if (iter != stores.end()) {
         _return = iter->second;
@@ -88,7 +86,7 @@ void StoreConf::setParent(StoreConf* pParent) {
     parent = pParent;
 }
 
-void StoreConf::getAllStores(vector<pStoreConf>& _return) const {
+void StoreConf::getAllStores(vector<StoreConfPtr>& _return) const {
     for (STR_CONF_MAP::const_iterator iter = stores.begin(); iter != stores.end(); ++iter) {
         _return.push_back(iter->second);
     }
@@ -250,7 +248,7 @@ bool StoreConf::parseStore(queue<string>& raw_config, /*out*/StoreConf* parsed_c
             string store_name = line.substr(1, pos - 1);
             store_name = trim(store_name);
 
-            pStoreConf new_store(new StoreConf);
+            StoreConfPtr new_store(new StoreConf);
 
             if (parseStore(raw_config, new_store.get())) {
                 std::map<std::string, int>::iterator itor = repeated_item.find(store_name);
