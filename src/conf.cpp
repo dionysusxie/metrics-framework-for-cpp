@@ -82,7 +82,7 @@ void StoreConf::setName(const std::string& ss) {
     name = ss;
 }
 
-void StoreConf::setParent(StoreConf* pParent) {
+void StoreConf::setParent(ptrStoreConf pParent) {
     parent = pParent;
 }
 
@@ -204,7 +204,7 @@ bool StoreConf::parseConfig(const string& filename) {
 // Side-effects:  - removes items from raw_config and adds items to parsed_config
 //
 // Returns true if a valid entry was found
-bool StoreConf::parseStore(queue<string>& raw_config, /*out*/StoreConf* parsed_config) {
+bool StoreConf::parseStore(queue<string>& raw_config, /*out*/ptrStoreConf parsed_config) {
     std::map<std::string, int> repeated_item;
     for(unsigned int i=0; i<sizeof(REPEATABLE_STORE)/sizeof(REPEATABLE_STORE[0]); ++i) {
         repeated_item[REPEATABLE_STORE[i]] = 0;

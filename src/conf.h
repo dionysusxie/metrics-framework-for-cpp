@@ -47,6 +47,7 @@
  */
 
 class StoreConf;
+typedef StoreConf* ptrStoreConf;
 typedef boost::shared_ptr<StoreConf> StoreConfPtr;
 typedef std::map<std::string, std::string> STR_STR_MAP;
 typedef std::map<std::string, StoreConfPtr> STR_CONF_MAP;
@@ -87,16 +88,16 @@ public:
     std::string getName() const;
     void setName(const std::string& ss);
 
-    void setParent(StoreConf* parent);
+    void setParent(ptrStoreConf parent);
 
 private:
     STR_STR_MAP values;
     STR_CONF_MAP stores;
-    StoreConf* parent;
+    ptrStoreConf parent;
     std::string name;
 
     static bool parseStore(/*in,out*/std::queue<std::string>& raw_config,
-            /*out*/StoreConf* parsed_config);
+            /*out*/ptrStoreConf parsed_config);
 
     static std::string trim(const std::string& str);
     static std::string trimLeft(const std::string& str);
