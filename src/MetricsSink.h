@@ -34,7 +34,7 @@ public:
 
     void config(StoreConf_SPtr conf);
     void close();
-    void putMetrics(std::vector<MetricsRecordPtr> records);
+    void putMetrics(const std::vector<MetricsRecordPtr>& records);
 
     void threadFunc();
 

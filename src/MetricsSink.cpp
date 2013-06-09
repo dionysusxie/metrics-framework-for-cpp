@@ -18,6 +18,8 @@ namespace sink {
 
 static const string TXT_MAX_QUEUE_SIZE = "max_queue_size";
 static const unsigned long DEF_MAX_QUEUE_SIZE = 100;
+static const long SEC_TO_WAIT_FOR_FILL_SINK_QUEUE = 1;
+
 
 /* static */ MetricsSinkPtr MetricsSink::createSink(StoreConf_SPtr conf) {
     MetricsSinkPtr NULL_PTR;
@@ -140,6 +142,7 @@ void MetricsSink::close() {
         // clear the flag
         {
             this->sink_thread_.reset();
+            this->record_queue_.reset();
         }
     }
 
@@ -154,9 +157,38 @@ void MetricsSink::close() {
     }
 }
 
-void MetricsSink::putMetrics(std::vector<MetricsRecordPtr> records) {
+// @note  Don't change anything in param 'records', for it will be pushed to other sinks.
+void MetricsSink::putMetrics(const std::vector<MetricsRecordPtr>& records) {
     // get the lock with time-out!
+    boost::unique_lock<boost::recursive_timed_mutex> timed_lock(this->public_mutex_,
+            boost::get_system_time() + boost::posix_time::seconds(SEC_TO_WAIT_FOR_FILL_SINK_QUEUE));
 
+    if (!timed_lock.owns_lock()) {
+        METRICS_LOG_WARNING("Failed to fill metrics records to sink %s! Can't get lock in %d seconds.",
+                this->name_.c_str(), SEC_TO_WAIT_FOR_FILL_SINK_QUEUE);
+        return;
+    }
+
+
+    lock_guard<mutex> guard(this->queue_lock_);
+
+    if (this->record_queue_.get() == NULL) {
+        this->record_queue_.reset(new RECORDS_QUEUE);
+    }
+
+    METRICS_LOG_DEBUG("Sink %s: queue size %u, new records %u", this->name_.c_str(),
+            this->record_queue_->size(), records.size());
+
+    for (size_t i = 0; i < records.size(); i++) {
+        if (this->record_queue_->size() >= this->max_queue_size_) {
+            const size_t num_lost_records = records.size() - i;
+            METRICS_LOG_WARNING("Sink %s: queue is full, %u records lost",
+                    this->name_.c_str(), num_lost_records);
+            break;
+        }
+
+        this->record_queue_->push(records[i]);
+    }
 }
 
 void MetricsSink::threadFunc() {
@@ -191,6 +223,8 @@ void MetricsSink::threadFunc() {
 
         // consume the records
         {
+            METRICS_LOG_DEBUG("Sink %s begin to consume the metrics records", this->name_.c_str());
+
             RECORDS_QUEUE_PTR tmp_queue;
             {
                 lock_guard<mutex> guard(this->queue_lock_);
