@@ -9,6 +9,7 @@
 
 namespace gmf {
 
-const std::string METRICS_LOG_CONTEXT("metrics");
+const std::string METRICS_LOG_CONTEXT = "metrics";
+const std::string TXT_SINK = "sink";
 
 }

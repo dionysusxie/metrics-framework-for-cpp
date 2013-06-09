@@ -6,7 +6,9 @@
  */
 
 #include "MetricsSystem.h"
+#include "conf.h"
 
+using namespace std;
 using namespace boost;
 
 namespace gmf {
@@ -31,7 +33,34 @@ MetricsSystem::~MetricsSystem() {
     // TODO Auto-generated destructor stub
 }
 
-bool MetricsSystem::config() {
+bool MetricsSystem::config(StoreConf_SPtr conf) {
+    METRICS_LOG_INFO("Begin to cofig the metrics system");
+
+    if (conf.get() == NULL) {
+        return false;
+    }
+
+    // get sinks
+    {
+        std::vector<StoreConf_SPtr> conf_stores;
+        conf->getAllStores(conf_stores);
+
+        for (vector<StoreConf_SPtr>::iterator it = conf_stores.begin();
+                it != conf_stores.end(); it++) {
+            StoreConf_SPtr conf_item = *it;
+
+            bool is_sink = false;
+            {
+                const string store_name = conf_item->getName();
+                is_sink = store_name.find(TXT_SINK) == 0;
+            }
+
+            if (is_sink) {
+                this->registerSink(sink::MetricsSink::createSink(conf_item));
+            }
+        }
+    }
+
     return true;
 }
 
@@ -54,7 +83,7 @@ bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
     return true;
 }
 
-bool MetricsSystem::registerSink(boost::shared_ptr<sink::MetricsSink>) {
+bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
     return true;
 }
 

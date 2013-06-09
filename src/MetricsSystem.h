@@ -24,9 +24,9 @@ public:
 public:
     virtual ~MetricsSystem();
 
-    bool config();
+    bool config(StoreConf_SPtr conf);
     bool registerSource(source::MetricsSourcePtr);
-    bool registerSink(boost::shared_ptr<sink::MetricsSink>);
+    bool registerSink(sink::MetricsSinkPtr sink);
     void start();
     void stop();
 

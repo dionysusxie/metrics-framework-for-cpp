@@ -17,11 +17,14 @@ using namespace boost;
 using namespace gmf;
 
 const string DEFAULT_CONFIG_FILE("/etc/test/test.conf");
+const string TXT_METRICS = "metrics";
+
 
 void print_usage(const char* program_name) {
     cout << "Usage: " << program_name << " [-h] [-c config_file] [-l log_config_file] [-d]" << endl;
     cout << "Default config_file: " << DEFAULT_CONFIG_FILE << endl;
 }
+
 
 int main(int argc, char* argv[]) {
     try {
@@ -68,12 +71,36 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // config
+        {
+            LOG_INFO("Begin to cofig");
+
+            StoreConf_SPtr conf(new StoreConf);
+            if (!conf->parseConfig(config_file)) {
+                LOG_ERROR("Failed to parse the config file: %s", config_file.c_str());
+                goto __end;
+            }
+
+            // config metrics system
+            {
+                StoreConf_SPtr metrics_conf;
+                if (conf->getStore(TXT_METRICS, metrics_conf)) {
+                    MetricsSystem::getSingleton()->config(metrics_conf);
+                }
+                else {
+                    LOG_INFO("No metrics sinks found");
+                }
+            }
+        }
+
         MetricsSystem::getSingleton()->start();
+        MetricsSystem::getSingleton()->stop();
     }
     catch(const std::exception& e) {
         LOG_ERROR("Exception in main: %s", e.what());
     }
 
+__end:
     LOG_INFO("Exit now");
     return 0;
 }

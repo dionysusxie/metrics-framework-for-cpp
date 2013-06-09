@@ -26,6 +26,7 @@ static const long SEC_TO_WAIT_FOR_FILL_SINK_QUEUE = 1;
 
     string type;
     conf->getString("type", type);
+    METRICS_LOG_INFO("Create sink: type = %s", type.c_str());
 
     MetricsSinkPtr sink;
     if (SinkToConsole::TYPE_TXT == type) {

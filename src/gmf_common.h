@@ -29,7 +29,7 @@ enum MetricType {
 };
 
 extern const std::string METRICS_LOG_CONTEXT;
-
+extern const std::string TXT_SINK;
 }
 
 #endif /* GMF_COMMON_H_ */
