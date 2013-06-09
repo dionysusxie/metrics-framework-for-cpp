@@ -16,6 +16,8 @@ CC = g++
 
 .PHONY: clean
 
+all: $(TARGET)
+
 $(TARGET): $(OBJECT_FILES)
 	$(CC) -o $(TARGET) $(OBJECT_FILES) $(LDFLAGS)
 	@echo "Build successfully!"
