@@ -47,12 +47,10 @@ static void threadStatic(MetricsSink* ptr) {
 
 MetricsSink::MetricsSink(const std::string& type):
     type_(type) {
-    // TODO Auto-generated constructor stub
-
+    this->has_work_ = false;
 }
 
 MetricsSink::~MetricsSink() {
-    // TODO Auto-generated destructor stub
 }
 
 std::string MetricsSink::getType() {
@@ -110,103 +108,108 @@ void MetricsSink::close() {
 
     // already closed?
     if (this->sink_thread_.get() == NULL) {
-        METRICS_LOG_WARNING("You are closing a sink %s which is already closed.", this->getName().c_str());
+        METRICS_LOG_WARNING("You are closing the sink %s which is already closed.", this->getName().c_str());
         return;
     }
 
-    // close the derived class first
+    // stop the sink thread first
+    {
+        // put a command of ending
+        {
+            lock_guard<mutex> guard(this->thread_cmds_mutex_);
+            this->thread_cmds_.push(CMD_STOP);
+            METRICS_LOG_INFO("Sink %s: put a command of CMD_STOP", this->name_.c_str());
+        }
+
+        // awake the sleeping thread
+        {
+            lock_guard<mutex> guard(this->has_work_mutex_);
+            if (!(this->has_work_)) {
+                this->has_work_ = true;
+                this->has_work_cond_.notify_all();
+                METRICS_LOG_INFO("Sink %s: awake the sleeping thread", this->name_.c_str());
+            }
+        }
+
+        // wait for the ending of the sink thread
+        {
+            this->sink_thread_->join();
+            METRICS_LOG_INFO("Sink %s: thread stopped", this->name_.c_str());
+        }
+
+        // clear the flag
+        {
+            this->sink_thread_.reset();
+        }
+    }
+
+    // close the derived class
     {
         closeImpl();
     }
 
-    // stop the sink thread
+    // post-assertsions
     {
-
+        BOOST_ASSERT(this->sink_thread_.get() == NULL);
     }
 }
 
 void MetricsSink::putMetrics(std::vector<MetricsRecordPtr> records) {
-    boost::lock_guard<recursive_timed_mutex> lock(this->public_mutex_);
+    // get the lock with time-out!
+
 }
 
 void MetricsSink::threadFunc() {
-//    METRICS_LOG_INFO("%s: sink thread starting ...", this->name_.c_str());
-//
-//
-//    //
-//    // the loop:
-//    //
-//
-//    bool b_stop = false;
-//    while (!b_stop) {
-//
-//        // Handle commands
-//        {
-//            lock_guard<mutex> lock(thread_cmds_mutex_);
-//
-//            while (!thread_cmds_.empty()) {
-//                EnumCommand cmd = thread_cmds_.front();
-//                thread_cmds_.pop();
-//
-//                switch (cmd) {
-//                case CMD_STOP:
-//                    b_stop = true;
-//                    break;
-//                default:
-//                    LOG_WARNING("Invalid command type!");
-//                    break;
-//                }
-//            }
-//        }
-//
-//
-//        //
-//        // publish now!
-//        //
-//
-//        // Convert data in the container to JSON string for sending out.
-//        if (jsons_for_sending_.empty()) {
-//            ContainerType tmp_container;
-//            {
-//                lock_guard<shared_mutex> write_lock(container_mutex_);
-//                tmp_container.swap(container_);
-//            }
-//
-//            convertStatisticsToJSONStr(tmp_container, jsons_for_sending_, MAX_NUM_ITEMS_TO_PUBLISH_EACH_TIME);
-//        }
-//
-//        if (sendJSONData(jsons_for_sending_, zmq_socket)) {
-//            // update the timestamp of last sending OK
-//            {
-//                lock_guard<shared_mutex> write_lock(lock_of_the_timestamp_of_last_sending_ok_);
-//                timestamp_of_last_sending_ok_ = time(NULL);
-//            }
-//
-//            usleep(SLEEP_TIME_IN_USECONDS_WHEN_SUCCEED);
-//        }
-//        else {
-//            usleep(SLEEP_TIME_IN_USECONDS_WHEN_FAILED);
-//        }
-//
-//
-//        //
-//        // check subscribing of Giant Dimension update
-//        //
-//
-//        if (subscribe_gd_ && (!b_stop)) {
-//            Schema_SubmittedGDVals_Map_Ptr gdvals = getSubscribedGDSubmittedVals(gd_subscriber);
-//            if (gdvals) {
-//                if (updateGiantDimensionVals(*gdvals)) {
-//                    LOG_DEBUG("Giant Dimension Update: successfully");
-//                }
-//                else {
-//                    LOG_INFO("Giant Dimension Update: failed");
-//                }
-//            }
-//        }
-//    }
-//
-//    LOG_INFO("The publishing thread begin to end now ...");
+    METRICS_LOG_INFO("%s: sink thread starting ...", this->name_.c_str());
+
+    bool b_stop = false;
+    while(true) {
+
+        // Handle commands
+        {
+            lock_guard<mutex> lock(thread_cmds_mutex_);
+
+            while (!thread_cmds_.empty()) {
+                EnumCommand cmd = thread_cmds_.front();
+                thread_cmds_.pop();
+
+                switch (cmd) {
+                case CMD_STOP:
+                    b_stop = true;
+                    break;
+
+                default:
+                    METRICS_LOG_ERROR("%s: invalid command type: %u", this->name_.c_str(), cmd);
+                    break;
+                }
+            }
+        }
+
+        if (b_stop) {
+            break;
+        }
+
+        // consume the records
+        {
+            RECORDS_QUEUE_PTR tmp_queue;
+            {
+                lock_guard<mutex> guard(this->queue_lock_);
+                tmp_queue = this->record_queue_;
+                this->record_queue_.reset(new RECORDS_QUEUE);
+            }
+
+            this->consumeRecords(tmp_queue);
+        }
+
+        // sleep if no work to do
+        {
+            lock_guard<mutex> guard(this->has_work_mutex_);
+            if (!this->has_work_) {
+                this->has_work_cond_.wait(this->has_work_mutex_);
+                this->has_work_ = false;
+            }
+        }
+    }
 }
 
 
@@ -230,9 +233,13 @@ void SinkToConsole::closeImpl() {
 }
 
 // Write records to std.
-void SinkToConsole::consumeRecords(std::queue<MetricsRecordPtr> records) {
-    while (!records.empty()) {
-        MetricsRecordPtr r = records.front();
+void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
+    if (records.get() == NULL) {
+        return;
+    }
+
+    while (!records->empty()) {
+        MetricsRecordPtr r = records->front();
 
         string out_line;
         {
@@ -241,7 +248,7 @@ void SinkToConsole::consumeRecords(std::queue<MetricsRecordPtr> records) {
         }
         cout << out_line << endl;
 
-        records.pop();
+        records->pop();
     }
 }
 
