@@ -1,6 +1,6 @@
 # Top level makefile, the real shit is at src/Makefile
 
-TARGET = test
+TARGET = all
 
 default: $(TARGET)
 
