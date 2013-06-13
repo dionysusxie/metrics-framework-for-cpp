@@ -84,6 +84,19 @@ bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
 }
 
 bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
+    if (sink.get() == NULL) {
+        METRICS_LOG_WARNING("NULL ptr of the metrics-sink to be registered");
+        return false;
+    }
+
+    bool registered_already = this->sinks_.count(sink->getName()) > 0;
+    if (registered_already) {
+        METRICS_LOG_WARNING("Sink with the name %s already registered", sink->getName().c_str());
+        return false;
+    }
+
+    this->sinks_[sink->getName()] = sink;
+
     return true;
 }
 

@@ -37,8 +37,10 @@ private:
     static boost::shared_ptr<MetricsSystem> s_pSingleton;
 private:
     // key: name of metrics source
-    // value: metrics source's ptr
     std::map<std::string, source::MetricsSourcePtr> sources_;
+
+    // key: name of metrics sink
+    std::map<std::string, sink::MetricsSinkPtr> sinks_;
 };
 
 } /* namespace gmf */
