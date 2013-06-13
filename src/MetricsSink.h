@@ -22,7 +22,7 @@ class MetricsSink;
 typedef boost::shared_ptr<MetricsSink> MetricsSinkPtr;
 
 
-class MetricsSink {
+class MetricsSink: public BasicItem {
 public:
     static MetricsSinkPtr createSink(StoreConf_SPtr conf);
 public:
@@ -30,7 +30,6 @@ public:
     virtual ~MetricsSink();
 public:
     std::string getType();
-    std::string getName();
 
     void config(StoreConf_SPtr conf);
     void close();
@@ -52,7 +51,6 @@ private:
     boost::recursive_timed_mutex public_mutex_;
 
     const std::string type_;
-    std::string name_;
 
     // Queue of metrics records;
     // New metrics records would be lost if the queue is full.

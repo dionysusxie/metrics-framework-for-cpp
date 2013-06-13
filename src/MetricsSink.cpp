@@ -49,6 +49,7 @@ static void threadStatic(MetricsSink* ptr) {
 }
 
 MetricsSink::MetricsSink(const std::string& type):
+    BasicItem(),
     type_(type) {
     this->has_work_ = false;
 }
@@ -59,11 +60,6 @@ MetricsSink::~MetricsSink() {
 std::string MetricsSink::getType() {
     boost::lock_guard<recursive_timed_mutex> lock(this->public_mutex_);
     return this->type_;
-}
-
-std::string MetricsSink::getName() {
-    boost::lock_guard<recursive_timed_mutex> lock(this->public_mutex_);
-    return this->name_;
 }
 
 void MetricsSink::config(StoreConf_SPtr conf) {
@@ -91,8 +87,8 @@ void MetricsSink::config(StoreConf_SPtr conf) {
 
     // config self
     {
-        this->name_ = conf->getName();
-        METRICS_LOG_INFO("sink %s:", this->name_.c_str());
+        this->setName(conf->getName());
+        METRICS_LOG_INFO("sink %s:", this->getName().c_str());
 
         this->max_queue_size_ = DEF_MAX_QUEUE_SIZE;
         conf->getUnsigned(TXT_MAX_QUEUE_SIZE, this->max_queue_size_);
@@ -121,7 +117,7 @@ void MetricsSink::close() {
         {
             lock_guard<mutex> guard(this->thread_cmds_mutex_);
             this->thread_cmds_.push(CMD_STOP);
-            METRICS_LOG_INFO("Sink %s: put a command of CMD_STOP", this->name_.c_str());
+            METRICS_LOG_INFO("Sink %s: put a command of CMD_STOP", this->getName().c_str());
         }
 
         // awake the sleeping thread
@@ -130,14 +126,14 @@ void MetricsSink::close() {
             if (!(this->has_work_)) {
                 this->has_work_ = true;
                 this->has_work_cond_.notify_all();
-                METRICS_LOG_INFO("Sink %s: awake the sleeping thread", this->name_.c_str());
+                METRICS_LOG_INFO("Sink %s: awake the sleeping thread", this->getName().c_str());
             }
         }
 
         // wait for the ending of the sink thread
         {
             this->sink_thread_->join();
-            METRICS_LOG_INFO("Sink %s: thread stopped", this->name_.c_str());
+            METRICS_LOG_INFO("Sink %s: thread stopped", this->getName().c_str());
         }
 
         // clear the flag
@@ -166,7 +162,7 @@ void MetricsSink::putMetrics(const std::vector<MetricsRecordPtr>& records) {
 
     if (!timed_lock.owns_lock()) {
         METRICS_LOG_WARNING("Failed to fill metrics records to sink %s! Can't get lock in %d seconds.",
-                this->name_.c_str(), SEC_TO_WAIT_FOR_FILL_SINK_QUEUE);
+                this->getName().c_str(), SEC_TO_WAIT_FOR_FILL_SINK_QUEUE);
         return;
     }
 
@@ -177,14 +173,14 @@ void MetricsSink::putMetrics(const std::vector<MetricsRecordPtr>& records) {
         this->record_queue_.reset(new RECORDS_QUEUE);
     }
 
-    METRICS_LOG_DEBUG("Sink %s: queue size %u, new records %u", this->name_.c_str(),
+    METRICS_LOG_DEBUG("Sink %s: queue size %u, new records %u", this->getName().c_str(),
             this->record_queue_->size(), records.size());
 
     for (size_t i = 0; i < records.size(); i++) {
         if (this->record_queue_->size() >= this->max_queue_size_) {
             const size_t num_lost_records = records.size() - i;
             METRICS_LOG_WARNING("Sink %s: queue is full, %u records lost",
-                    this->name_.c_str(), num_lost_records);
+                    this->getName().c_str(), num_lost_records);
             break;
         }
 
@@ -193,7 +189,7 @@ void MetricsSink::putMetrics(const std::vector<MetricsRecordPtr>& records) {
 }
 
 void MetricsSink::threadFunc() {
-    METRICS_LOG_INFO("%s: sink thread starting ...", this->name_.c_str());
+    METRICS_LOG_INFO("%s: sink thread starting ...", this->getName().c_str());
 
     bool b_stop = false;
     while(true) {
@@ -212,7 +208,7 @@ void MetricsSink::threadFunc() {
                     break;
 
                 default:
-                    METRICS_LOG_ERROR("%s: invalid command type: %u", this->name_.c_str(), cmd);
+                    METRICS_LOG_ERROR("%s: invalid command type: %u", this->getName().c_str(), cmd);
                     break;
                 }
             }
@@ -224,7 +220,7 @@ void MetricsSink::threadFunc() {
 
         // consume the records
         {
-            METRICS_LOG_DEBUG("Sink %s begin to consume the metrics records", this->name_.c_str());
+            METRICS_LOG_DEBUG("Sink %s begin to consume the metrics records", this->getName().c_str());
 
             RECORDS_QUEUE_PTR tmp_queue;
             {
