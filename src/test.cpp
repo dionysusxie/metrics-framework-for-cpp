@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
         {
             LOG_INFO("Begin to cofig");
 
+            // parse the config file
             StoreConf_SPtr conf(new StoreConf);
             if (!conf->parseConfig(config_file)) {
                 LOG_ERROR("Failed to parse the config file: %s", config_file.c_str());
@@ -85,10 +86,14 @@ int main(int argc, char* argv[]) {
             {
                 StoreConf_SPtr metrics_conf;
                 if (conf->getStore(TXT_METRICS, metrics_conf)) {
-                    MetricsSystem::getSingleton()->config(metrics_conf);
+                    if (!MetricsSystem::getSingleton()->config(metrics_conf)) {
+                        LOG_ERROR("Failed to config Metrics System!");
+                        goto __end;
+                    }
                 }
                 else {
-                    LOG_INFO("No metrics sinks found");
+                    LOG_ERROR("No config items for Metrics System!");
+                    goto __end;
                 }
             }
         }
@@ -101,6 +106,6 @@ int main(int argc, char* argv[]) {
     }
 
 __end:
-    LOG_INFO("Exit now");
+    LOG_INFO("Exit");
     return 0;
 }
