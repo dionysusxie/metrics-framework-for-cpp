@@ -16,6 +16,9 @@ namespace gmf {
 // class BasicItemReadOnly:
 //
 
+const std::string BasicItemReadOnly::DEF_NAME = "none";
+const std::string BasicItemReadOnly::DEF_DESC = "none";
+
 BasicItemReadOnly::BasicItemReadOnly(const std::string& name, const std::string& desc):
     name_(name),
     description_(desc) {

@@ -15,7 +15,10 @@ namespace gmf {
 
 class BasicItemReadOnly {
 public:
-    BasicItemReadOnly(const std::string& name, const std::string& desc);
+    static const std::string DEF_NAME;
+    static const std::string DEF_DESC;
+public:
+    BasicItemReadOnly(const std::string& name = DEF_NAME, const std::string& desc = DEF_DESC);
     virtual ~BasicItemReadOnly();
 public:
     std::string getName() const;
@@ -27,7 +30,7 @@ protected:
 
 class BasicItem: public BasicItemReadOnly {
 public:
-    BasicItem(const std::string& name = "none", const std::string& desc = "none");
+    BasicItem(const std::string& name = DEF_NAME, const std::string& desc = DEF_DESC);
     virtual ~BasicItem();
 public:
     void setName(const std::string&);
