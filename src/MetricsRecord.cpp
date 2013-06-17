@@ -11,9 +11,9 @@ namespace gmf {
 
 MetricsRecord::MetricsRecord(const std::string& name, const std::string& desc,
         const std::string& ctx):
-    BasicItem(name, desc),
-    context_(ctx),
-    timestamp_(time(NULL)) {
+        BasicItemReadOnly(name, desc),
+        context_(ctx),
+        timestamp_(time(NULL)) {
 }
 
 MetricsRecord::~MetricsRecord() {

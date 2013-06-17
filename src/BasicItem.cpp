@@ -11,14 +11,38 @@ using namespace std;
 
 namespace gmf {
 
-BasicItem::BasicItem(const std::string& name, const std::string& desc) {
-    // TODO Auto-generated constructor stub
-    this->name_ = name;
-    this->description_ = desc;
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+// class BasicItemReadOnly:
+//
+
+BasicItemReadOnly::BasicItemReadOnly(const std::string& name, const std::string& desc):
+    name_(name),
+    description_(desc) {
+}
+
+BasicItemReadOnly::~BasicItemReadOnly() {
+}
+
+std::string BasicItemReadOnly::getName() const {
+    return this->name_;
+}
+
+std::string BasicItemReadOnly::getDescription() const {
+    return this->description_;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+// class BasicItem:
+//
+
+BasicItem::BasicItem(const std::string& name, const std::string& desc):
+        BasicItemReadOnly(name, desc) {
 }
 
 BasicItem::~BasicItem() {
-    // TODO Auto-generated destructor stub
 }
 
 void BasicItem::setName(const std::string& name) {
@@ -27,14 +51,6 @@ void BasicItem::setName(const std::string& name) {
 
 void BasicItem::setDescription(const std::string& desc) {
     this->description_ = desc;
-}
-
-std::string BasicItem::getName() const {
-    return this->name_;
-}
-
-std::string BasicItem::getDescription() const {
-    return this->description_;
 }
 
 } /* namespace gmf */

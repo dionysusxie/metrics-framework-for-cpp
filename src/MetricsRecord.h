@@ -21,7 +21,7 @@ class MetricsRecord;
 typedef boost::shared_ptr<MetricsRecord> MetricsRecordPtr;
 
 // An immutable snapshot of metrics with a timestamp
-class MetricsRecord: public BasicItem {
+class MetricsRecord: public BasicItemReadOnly {
 public:
     MetricsRecord(const std::string& name, const std::string& desc,
             const std::string& ctx);

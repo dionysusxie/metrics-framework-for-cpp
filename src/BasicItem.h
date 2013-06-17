@@ -13,21 +13,25 @@
 
 namespace gmf {
 
-class BasicItem {
+class BasicItemReadOnly {
+public:
+    BasicItemReadOnly(const std::string& name, const std::string& desc);
+    virtual ~BasicItemReadOnly();
+public:
+    std::string getName() const;
+    std::string getDescription() const;
+protected:
+    std::string name_;
+    std::string description_;
+};
+
+class BasicItem: public BasicItemReadOnly {
 public:
     BasicItem(const std::string& name = "none", const std::string& desc = "none");
     virtual ~BasicItem();
-
 public:
     void setName(const std::string&);
     void setDescription(const std::string&);
-
-    std::string getName() const;
-    std::string getDescription() const;
-
-private:
-    std::string name_;
-    std::string description_;
 };
 
 } /* namespace gmf */
