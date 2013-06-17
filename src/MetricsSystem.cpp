@@ -34,6 +34,7 @@ MetricsSystem::~MetricsSystem() {
 }
 
 bool MetricsSystem::config(StoreConf_SPtr conf) {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
     METRICS_LOG_INFO("Begin to cofig the metrics system");
 
     if (conf.get() == NULL) {
@@ -68,6 +69,8 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
 // @return  true if registered OK, otherwise false.
 // @note  If the name of the source to be registered already exists, false returned.
 bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
+
     if (src.get() == NULL) {
         METRICS_LOG_WARNING("NULL ptr of the metrics-source to be registered");
         return false;
@@ -84,6 +87,8 @@ bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
 }
 
 bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
+
     if (sink.get() == NULL) {
         METRICS_LOG_WARNING("NULL ptr of the metrics-sink to be registered");
         return false;
@@ -101,10 +106,12 @@ bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
 }
 
 void MetricsSystem::start() {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
     METRICS_LOG_INFO("system start ...");
 }
 
 void MetricsSystem::stop() {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
     METRICS_LOG_INFO("system stop ...");
 
     // stop the thread of collecting metrics

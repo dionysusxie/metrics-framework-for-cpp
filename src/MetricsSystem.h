@@ -9,6 +9,7 @@
 #define METRICSSYSTEM_H_
 
 #include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
 #include <map>
 #include "gmf_common.h"
 #include "MetricsSource.h"
@@ -41,6 +42,9 @@ private:
     // key: name of metrics sink
     typedef std::map<std::string, sink::MetricsSinkPtr> SINK_CONTAINER_T;
 private:
+    // All public methods have to get this lock first!
+    boost::recursive_timed_mutex common_mutex_;
+
     SOURCE_CONTAINER_T sources_;
     SINK_CONTAINER_T sinks_;
 };
