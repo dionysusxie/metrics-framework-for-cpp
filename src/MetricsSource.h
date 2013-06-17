@@ -29,6 +29,7 @@ public:
 
 class Test: public MetricsSource {
 public:
+    Test();
     virtual MetricsRecordPtr getMetrics();
 };
 

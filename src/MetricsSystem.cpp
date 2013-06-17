@@ -41,7 +41,12 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
         return false;
     }
 
-    // get sinks
+    // register sources
+    {
+        this->registerAllSources();
+    }
+
+    // register sinks
     {
         std::vector<StoreConf_SPtr> conf_stores;
         conf->getAllStores(conf_stores);
@@ -65,12 +70,17 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
     return true;
 }
 
+void MetricsSystem::registerAllSources() {
+    // This function should be completed by the user of this Metrics-System!
+
+    source::MetricsSourcePtr src(new source::Test());
+    this->registerSource(src);
+}
+
 // @param  src  A ptr to metrics-source to be registered.
 // @return  true if registered OK, otherwise false.
 // @note  If the name of the source to be registered already exists, false returned.
 bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
-    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
-
     if (src.get() == NULL) {
         METRICS_LOG_WARNING("NULL ptr of the metrics-source to be registered");
         return false;
@@ -83,12 +93,11 @@ bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
     }
 
     this->sources_[src->getName()] = src;
+    METRICS_LOG_INFO("Register source %s: %s", src->getName().c_str(), src->getDescription().c_str());
     return true;
 }
 
 bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
-    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
-
     if (sink.get() == NULL) {
         METRICS_LOG_WARNING("NULL ptr of the metrics-sink to be registered");
         return false;

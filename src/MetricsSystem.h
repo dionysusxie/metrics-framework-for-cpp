@@ -26,13 +26,15 @@ public:
     virtual ~MetricsSystem();
 
     bool config(StoreConf_SPtr conf);
-    bool registerSource(source::MetricsSourcePtr);
-    bool registerSink(sink::MetricsSinkPtr sink);
     void start();
     void stop();
 
 private:
     MetricsSystem();
+
+    bool registerSource(source::MetricsSourcePtr);
+    bool registerSink(sink::MetricsSinkPtr sink);
+    void registerAllSources();
 
 private:
     static boost::shared_ptr<MetricsSystem> s_pSingleton;

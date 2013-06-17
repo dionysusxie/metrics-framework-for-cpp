@@ -21,6 +21,15 @@ MetricsSource::~MetricsSource() {
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// class Test:
+//
+
+Test::Test():
+        MetricsSource("test-source", "a metric source for testing") {
+}
+
 MetricsRecordPtr Test::getMetrics() {
     return MetricsRecordPtr(new MetricsRecord("test", "just for testing", "test"));
 }
