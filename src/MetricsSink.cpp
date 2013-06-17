@@ -241,6 +241,8 @@ void MetricsSink::threadFunc() {
             }
         }
     }
+
+    METRICS_LOG_INFO("%s: sink thread stop ...", this->getName().c_str());
 }
 
 
@@ -260,7 +262,7 @@ void SinkToConsole::configImpl(StoreConf_SPtr conf) {
 }
 
 void SinkToConsole::closeImpl() {
-
+    METRICS_LOG_INFO("%s: close %s", this->getName().c_str(), TYPE_TXT.c_str());
 }
 
 // Write records to std.

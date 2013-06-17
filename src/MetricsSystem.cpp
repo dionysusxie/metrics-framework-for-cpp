@@ -101,11 +101,24 @@ bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
 }
 
 void MetricsSystem::start() {
-    METRICS_LOG_INFO("system start");
+    METRICS_LOG_INFO("system start ...");
 }
 
 void MetricsSystem::stop() {
+    METRICS_LOG_INFO("system stop ...");
 
+    // stop the thread of collecting metrics
+    {
+
+    }
+
+    // stop sinks
+    {
+        for (SINK_CONTAINER_T::iterator it = this->sinks_.begin();
+                it != this->sinks_.end(); it++) {
+            it->second->close();
+        }
+    }
 }
 
 } /* namespace gmf */
