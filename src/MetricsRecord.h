@@ -31,9 +31,12 @@ public:
     virtual ~MetricsRecord();
 
 public:
+    // const methods:
     time_t getTimestamp() const;
     std::string getContext() const;
     TAGS_MAP_T getTags() const;
+
+    // non-const methods:
 
 private:
     const std::string context_;
