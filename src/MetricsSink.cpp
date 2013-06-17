@@ -155,7 +155,7 @@ void MetricsSink::close() {
 }
 
 // @note  Don't change anything in param 'records', for it will be pushed to other sinks.
-void MetricsSink::putMetrics(const std::vector<MetricsRecordPtr>& records) {
+void MetricsSink::putMetrics(const std::vector<ConstMetricsRecordPtr>& records) {
     // get the lock with time-out!
     boost::unique_lock<boost::recursive_timed_mutex> timed_lock(this->public_mutex_,
             boost::get_system_time() + boost::posix_time::seconds(SEC_TO_WAIT_FOR_FILL_SINK_QUEUE));
@@ -272,12 +272,23 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
     }
 
     while (!records->empty()) {
-        MetricsRecordPtr r = records->front();
+        ConstMetricsRecordPtr r = records->front();
 
         string out_line;
         {
             out_line = r->getTimestamp() + "  " + r->getName() + "." + r->getContext() +
                     ", " + r->getDescription();
+
+            // add tags
+            {
+                gmf::MetricsRecord::TAGS_MAP_T tags = r->getTags();
+                for (gmf::MetricsRecord::TAGS_MAP_T::const_iterator it = tags.begin();
+                        it != tags.end(); it++) {
+                    const string tag_name = it->second.getName();
+                    const string tag_value = it->second.getValue();
+                    out_line += " " + tag_name + "=" + tag_value;
+                }
+            }
         }
         cout << out_line << endl;
 

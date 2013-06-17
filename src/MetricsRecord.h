@@ -19,9 +19,12 @@ namespace gmf {
 
 class MetricsRecord;
 typedef boost::shared_ptr<MetricsRecord> MetricsRecordPtr;
+typedef boost::shared_ptr<const MetricsRecord> ConstMetricsRecordPtr;
 
 // An immutable snapshot of metrics with a timestamp
 class MetricsRecord: public BasicItemReadOnly {
+public:
+    typedef std::map<std::string, MetricTag> TAGS_MAP_T;
 public:
     MetricsRecord(const std::string& name, const std::string& desc,
             const std::string& ctx);
@@ -30,12 +33,12 @@ public:
 public:
     time_t getTimestamp() const;
     std::string getContext() const;
-    std::map<std::string, MetricTag> getTags() const;
+    TAGS_MAP_T getTags() const;
 
 private:
     const std::string context_;
     const time_t timestamp_;
-    std::map<std::string, MetricTag> tags_;
+    TAGS_MAP_T tags_;
 };
 
 } /* namespace gmf */

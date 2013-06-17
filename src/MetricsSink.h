@@ -33,12 +33,12 @@ public:
 
     void config(StoreConf_SPtr conf);
     void close();
-    void putMetrics(const std::vector<MetricsRecordPtr>& records);
+    void putMetrics(const std::vector<ConstMetricsRecordPtr>& records);
 
     void threadFunc();
 
 public:
-    typedef std::queue<MetricsRecordPtr> RECORDS_QUEUE;
+    typedef std::queue<ConstMetricsRecordPtr> RECORDS_QUEUE;
     typedef boost::shared_ptr<RECORDS_QUEUE> RECORDS_QUEUE_PTR;
 
 protected:
