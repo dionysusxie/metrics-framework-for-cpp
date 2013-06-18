@@ -37,6 +37,7 @@ public:
     TAGS_MAP_T getTags() const;
 
     // non-const methods:
+    bool addTag(const MetricTag& tag);
 
 private:
     const std::string context_;

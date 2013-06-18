@@ -15,14 +15,15 @@ namespace gmf {
 
 class MetricTag: public BasicItem {
 public:
-    MetricTag(const std::string& name, const std::string& desc, const std::string& value);
+    MetricTag(const std::string& name = "", const std::string& desc = "",
+            const std::string& value = "");
     virtual ~MetricTag();
 
 public:
     std::string getValue() const;
 
 private:
-    const std::string value_;
+    std::string value_;
 };
 
 } /* namespace gmf */

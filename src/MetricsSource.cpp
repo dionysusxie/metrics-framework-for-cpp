@@ -33,7 +33,10 @@ Test::Test():
 }
 
 ConstMetricsRecordPtr Test::getMetrics() {
-    ConstMetricsRecordPtr record(new MetricsRecord("test", this->getDescription(), this->context_));
+    MetricsRecordPtr record(new MetricsRecord("test", this->getDescription(), this->context_));
+    record->addTag(MetricTag("name", "author_name", "Dio Xie"));
+    record->addTag(MetricTag("age", "author_age", "29"));
+
     return record;
 }
 

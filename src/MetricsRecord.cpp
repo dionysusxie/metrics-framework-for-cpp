@@ -31,4 +31,17 @@ std::map<std::string, MetricTag> MetricsRecord::getTags() const {
     return this->tags_;
 }
 
+bool MetricsRecord::addTag(const MetricTag& tag) {
+    // check weather the tag exist or not
+    bool already_exists = this->tags_.count(tag.getName()) > 0;
+    if (already_exists) {
+        METRICS_LOG_ERROR("Tag <%s> already exists in metrics record <%s>",
+                tag.getName().c_str(), this->getName().c_str());
+        return false;
+    }
+
+    this->tags_[tag.getName()] = tag;
+    return true;
+}
+
 } /* namespace gmf */

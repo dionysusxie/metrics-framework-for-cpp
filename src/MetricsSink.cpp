@@ -293,7 +293,7 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
             ostringstream os;
 
             os << r->getTimestamp() << "  " << r->getName() << "." << r->getContext()
-               << ", " << r->getDescription();
+               << ", " << r->getDescription() << "; ";
 
             // add tags
             {
@@ -302,7 +302,7 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
                         it != tags.end(); it++) {
                     const string tag_name = it->second.getName();
                     const string tag_value = it->second.getValue();
-                    os << " " << tag_name << "=" << tag_value;
+                    os << tag_name << "=" << tag_value << ", ";
                 }
             }
 
