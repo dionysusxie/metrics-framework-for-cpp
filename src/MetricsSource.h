@@ -24,13 +24,13 @@ public:
     virtual ~MetricsSource();
 
 public:
-    virtual MetricsRecordPtr getMetrics() = 0;
+    virtual ConstMetricsRecordPtr getMetrics() = 0;
 };
 
 class Test: public MetricsSource {
 public:
     Test();
-    virtual MetricsRecordPtr getMetrics();
+    virtual ConstMetricsRecordPtr getMetrics();
 };
 
 } /* namespace source */

@@ -13,6 +13,15 @@ using namespace boost;
 
 namespace gmf {
 
+static const string TXT_COLLECT_INTERVAL = "collect_interval";
+static const unsigned long DEF_METRICS_COLLECTING_INTERVAL = 10;
+static const string COLLECTING_THREAD_NAME = "Metrics-Collecting-Thread";
+
+static void threadStatic(MetricsSystem* ptr) {
+    return ptr->threadFunc();
+}
+
+
 // initialize the static member variables:
 shared_ptr<MetricsSystem> MetricsSystem::s_pSingleton;
 
@@ -24,20 +33,25 @@ shared_ptr<MetricsSystem> MetricsSystem::getSingleton() {
     return s_pSingleton;
 }
 
-MetricsSystem::MetricsSystem() {
-    // TODO Auto-generated constructor stub
-
+MetricsSystem::MetricsSystem():
+    has_work_(false) {
 }
 
 MetricsSystem::~MetricsSystem() {
-    // TODO Auto-generated destructor stub
 }
 
 bool MetricsSystem::config(StoreConf_SPtr conf) {
     boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
     METRICS_LOG_INFO("Begin to cofig the metrics system");
 
-    if (conf.get() == NULL) {
+    // pre-assertions:
+    {
+        BOOST_ASSERT_MSG(conf.get() != NULL, "Null config found in MetricsSystem::config()");
+    }
+
+    // If the collecting thread existed, return false!
+    if (this->metrics_collecting_thread_.get() != NULL) {
+        METRICS_LOG_ERROR("The metrics collecting thread is already running! You can't config it now.");
         return false;
     }
 
@@ -63,6 +77,17 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
                 this->registerSink(sink::MetricsSink::createSink(conf_item));
             }
         }
+    }
+
+    // config the thread to collecting metrics snapshot, then start it.
+    {
+        // collecting interval
+        this->metrics_collecting_interval_ = DEF_METRICS_COLLECTING_INTERVAL;
+        conf->getUnsigned(TXT_COLLECT_INTERVAL, this->metrics_collecting_interval_);
+        METRICS_LOG_INFO("%s: %u", TXT_COLLECT_INTERVAL.c_str(), this->metrics_collecting_interval_);
+
+        // start the thread
+        this->metrics_collecting_thread_ = shared_ptr<thread>(new thread(threadStatic, this));
     }
 
     return true;
@@ -112,27 +137,138 @@ bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
     return true;
 }
 
-void MetricsSystem::start() {
-    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
-    METRICS_LOG_INFO("system start ...");
-}
-
 void MetricsSystem::stop() {
     boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
+
     METRICS_LOG_INFO("system stop ...");
 
-    // stop the thread of collecting metrics
-    {
 
+    //
+    // stop the thread of collecting metrics
+    //
+
+    if (this->metrics_collecting_thread_.get() == NULL) {
+        METRICS_LOG_WARNING("%s: already stopped", COLLECTING_THREAD_NAME.c_str());
+    }
+    else {
+        // put a command of ending
+        {
+            lock_guard<mutex> guard(this->thread_cmds_mutex_);
+            this->thread_cmds_.push(CMD_STOP);
+            METRICS_LOG_INFO("%s: put a command of CMD_STOP", COLLECTING_THREAD_NAME.c_str());
+        }
+
+        // awake the sleeping thread
+        {
+            lock_guard<mutex> guard(this->has_work_mutex_);
+            if (!(this->has_work_)) {
+                this->has_work_ = true;
+                this->has_work_cond_.notify_all();
+                METRICS_LOG_INFO("%s: awake the sleeping thread", COLLECTING_THREAD_NAME.c_str());
+            }
+        }
+
+        // wait for the ending of the thread
+        {
+            this->metrics_collecting_thread_->join();
+            METRICS_LOG_INFO("%s: thread stopped", COLLECTING_THREAD_NAME.c_str());
+        }
+
+        // clear
+        {
+            this->metrics_collecting_thread_.reset();
+
+            while (!(this->thread_cmds_.empty())) {
+                this->thread_cmds_.pop();
+            }
+        }
     }
 
+
+    //
     // stop sinks
+    //
+
     {
         for (SINK_CONTAINER_T::iterator it = this->sinks_.begin();
                 it != this->sinks_.end(); it++) {
             it->second->close();
         }
     }
+}
+
+void MetricsSystem::threadFunc() {
+    METRICS_LOG_INFO("%s starting ...", COLLECTING_THREAD_NAME.c_str());
+
+    bool b_stop = false;
+    while(true) {
+
+        // Handle commands
+        {
+            lock_guard<mutex> lock(thread_cmds_mutex_);
+
+            while (!thread_cmds_.empty()) {
+                EnumCommand cmd = thread_cmds_.front();
+                thread_cmds_.pop();
+
+                switch (cmd) {
+                case CMD_STOP:
+                    b_stop = true;
+                    break;
+
+                default:
+                    METRICS_LOG_ERROR("%s: invalid command found: %u", COLLECTING_THREAD_NAME.c_str(), cmd);
+                    break;
+                }
+            }
+        }
+
+        if (b_stop) {
+            break;
+        }
+
+        // collect metrics from all registered sources, then push to registered sinks
+        {
+            METRICS_LOG_DEBUG("%s: collect metrics snapshot", COLLECTING_THREAD_NAME.c_str());
+
+            // get copys of sources & sinks
+            SOURCE_CONTAINER_T tmp_sources;
+            SINK_CONTAINER_T tmp_sinks;
+            {
+                boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
+                tmp_sources = this->sources_;
+                tmp_sinks = this->sinks_;
+            }
+
+            // collect
+            std::vector<ConstMetricsRecordPtr> records;
+            {
+                for (SOURCE_CONTAINER_T::iterator it = tmp_sources.begin();
+                        it != tmp_sources.end(); it++) {
+                    records.push_back(it->second->getMetrics());
+                }
+            }
+
+            // push to sinks
+            for (SINK_CONTAINER_T::iterator it = tmp_sinks.begin();
+                    it != tmp_sinks.end(); it++) {
+                it->second->putMetrics(records);
+            }
+        }
+
+        // sleep for some time if no work to do
+        {
+            lock_guard<mutex> guard(this->has_work_mutex_);
+            if (!this->has_work_) {
+                const boost::system_time timeout = boost::get_system_time() +
+                        boost::posix_time::seconds(this->metrics_collecting_interval_);
+                this->has_work_cond_.timed_wait(this->has_work_mutex_, timeout);
+                this->has_work_ = false;
+            }
+        }
+    }
+
+    METRICS_LOG_INFO("%s: stop ...", COLLECTING_THREAD_NAME.c_str());
 }
 
 } /* namespace gmf */

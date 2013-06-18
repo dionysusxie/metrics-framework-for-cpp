@@ -30,8 +30,9 @@ Test::Test():
         MetricsSource("test-source", "a metric source for testing") {
 }
 
-MetricsRecordPtr Test::getMetrics() {
-    return MetricsRecordPtr(new MetricsRecord("test", "just for testing", "test"));
+ConstMetricsRecordPtr Test::getMetrics() {
+    ConstMetricsRecordPtr record(new MetricsRecord("test", "just for testing", "test"));
+    return record;
 }
 
 } /* namespace source */

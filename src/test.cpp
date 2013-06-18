@@ -98,7 +98,6 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        MetricsSystem::getSingleton()->start();
         sleep(30);
         MetricsSystem::getSingleton()->stop();
     }

@@ -26,8 +26,9 @@ public:
     virtual ~MetricsSystem();
 
     bool config(StoreConf_SPtr conf);
-    void start();
     void stop();
+
+    void threadFunc();
 
 private:
     MetricsSystem();
@@ -44,11 +45,30 @@ private:
     // key: name of metrics sink
     typedef std::map<std::string, sink::MetricsSinkPtr> SINK_CONTAINER_T;
 private:
-    // All public methods have to get this lock first!
+    // All public methods except threadFunc() have to get this lock first!
     boost::recursive_timed_mutex common_mutex_;
 
     SOURCE_CONTAINER_T sources_;
     SINK_CONTAINER_T sinks_;
+
+    // Thread to collect metrics from all registered sources, then push them to
+    // registered sinks.
+    // NULL ptr means no thead created.
+    boost::shared_ptr<boost::thread> metrics_collecting_thread_;
+    unsigned long metrics_collecting_interval_;
+
+    // commands for the thread
+    enum EnumCommand {
+        CMD_STOP = 0,
+        CMD_MAX
+    };
+    std::queue<EnumCommand> thread_cmds_;
+    boost::mutex thread_cmds_mutex_;
+
+    // has work?
+    bool has_work_;
+    boost::mutex has_work_mutex_;
+    boost::condition_variable_any has_work_cond_;
 };
 
 } /* namespace gmf */

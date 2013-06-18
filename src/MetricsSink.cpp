@@ -159,7 +159,6 @@ void MetricsSink::putMetrics(const std::vector<ConstMetricsRecordPtr>& records) 
     // get the lock with time-out!
     boost::unique_lock<boost::recursive_timed_mutex> timed_lock(this->public_mutex_,
             boost::get_system_time() + boost::posix_time::seconds(SEC_TO_WAIT_FOR_FILL_SINK_QUEUE));
-
     if (!timed_lock.owns_lock()) {
         METRICS_LOG_WARNING("Failed to fill metrics records to sink %s! Can't get lock in %d seconds.",
                 this->getName().c_str(), SEC_TO_WAIT_FOR_FILL_SINK_QUEUE);
@@ -167,24 +166,36 @@ void MetricsSink::putMetrics(const std::vector<ConstMetricsRecordPtr>& records) 
     }
 
 
-    lock_guard<mutex> guard(this->queue_lock_);
+    // add records to the queue
+    {
+        lock_guard<mutex> guard(this->queue_lock_);
 
-    if (this->record_queue_.get() == NULL) {
-        this->record_queue_.reset(new RECORDS_QUEUE);
-    }
-
-    METRICS_LOG_DEBUG("Sink %s: queue size %u, new records %u", this->getName().c_str(),
-            this->record_queue_->size(), records.size());
-
-    for (size_t i = 0; i < records.size(); i++) {
-        if (this->record_queue_->size() >= this->max_queue_size_) {
-            const size_t num_lost_records = records.size() - i;
-            METRICS_LOG_WARNING("Sink %s: queue is full, %u records lost",
-                    this->getName().c_str(), num_lost_records);
-            break;
+        if (this->record_queue_.get() == NULL) {
+            this->record_queue_.reset(new RECORDS_QUEUE);
         }
 
-        this->record_queue_->push(records[i]);
+        METRICS_LOG_DEBUG("Sink %s: queue size %u, new records %u", this->getName().c_str(),
+                this->record_queue_->size(), records.size());
+
+        for (size_t i = 0; i < records.size(); i++) {
+            if (this->record_queue_->size() >= this->max_queue_size_) {
+                const size_t num_lost_records = records.size() - i;
+                METRICS_LOG_WARNING("Sink %s: queue is full, %u records lost",
+                        this->getName().c_str(), num_lost_records);
+                break;
+            }
+
+            this->record_queue_->push(records[i]);
+        }
+    }
+
+    // awake the sink thread
+    {
+        lock_guard<mutex> guard(this->has_work_mutex_);
+        if (!(this->has_work_)) {
+            this->has_work_ = true;
+            this->has_work_cond_.notify_all();
+        }
     }
 }
 
@@ -226,7 +237,7 @@ void MetricsSink::threadFunc() {
             {
                 lock_guard<mutex> guard(this->queue_lock_);
                 tmp_queue = this->record_queue_;
-                this->record_queue_.reset(new RECORDS_QUEUE);
+                this->record_queue_.reset(new RECORDS_QUEUE());
             }
 
             this->consumeRecords(tmp_queue);
@@ -268,16 +279,21 @@ void SinkToConsole::closeImpl() {
 // Write records to std.
 void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
     if (records.get() == NULL) {
+        METRICS_LOG_DEBUG("Null pointer encountered in SinkToConsole::consumeRecords()");
         return;
     }
+
+    METRICS_LOG_DEBUG("%s: begin to consume metrics records", this->getName().c_str());
 
     while (!records->empty()) {
         ConstMetricsRecordPtr r = records->front();
 
         string out_line;
         {
-            out_line = r->getTimestamp() + "  " + r->getName() + "." + r->getContext() +
-                    ", " + r->getDescription();
+            ostringstream os;
+
+            os << r->getTimestamp() << "  " << r->getName() << "." << r->getContext()
+               << ", " << r->getDescription();
 
             // add tags
             {
@@ -286,12 +302,14 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
                         it != tags.end(); it++) {
                     const string tag_name = it->second.getName();
                     const string tag_value = it->second.getValue();
-                    out_line += " " + tag_name + "=" + tag_value;
+                    os << " " << tag_name << "=" << tag_value;
                 }
             }
-        }
-        cout << out_line << endl;
 
+            out_line = os.str();
+        }
+
+        cout << out_line << endl;
         records->pop();
     }
 }
