@@ -284,8 +284,6 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
         return;
     }
 
-    METRICS_LOG_DEBUG("%s: begin to consume metrics records", this->getName().c_str());
-
     while (!records->empty()) {
         ConstMetricsRecordPtr r = records->front();
 
