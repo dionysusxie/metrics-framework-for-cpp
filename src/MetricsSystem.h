@@ -34,7 +34,7 @@ private:
 
     bool registerSource(source::MetricsSourcePtr);
     bool registerSink(sink::MetricsSinkPtr sink);
-    void registerAllSources();
+    void registerYourSources();
 
 private:
     static boost::shared_ptr<MetricsSystem> s_pSingleton;

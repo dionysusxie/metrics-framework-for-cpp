@@ -42,9 +42,7 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
     }
 
     // register sources
-    {
-        this->registerAllSources();
-    }
+    this->registerYourSources();
 
     // register sinks
     {
@@ -70,8 +68,8 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
     return true;
 }
 
-void MetricsSystem::registerAllSources() {
-    // This function should be completed by the user of this Metrics-System!
+void MetricsSystem::registerYourSources() {
+    // Register your metrics sources here!
 
     source::MetricsSourcePtr src(new source::Test());
     this->registerSource(src);
