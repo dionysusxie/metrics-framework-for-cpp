@@ -84,7 +84,8 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
         // collecting interval
         this->metrics_collecting_interval_ = DEF_METRICS_COLLECTING_INTERVAL;
         conf->getUnsigned(TXT_COLLECT_INTERVAL, this->metrics_collecting_interval_);
-        METRICS_LOG_INFO("%s: %u", TXT_COLLECT_INTERVAL.c_str(), this->metrics_collecting_interval_);
+        METRICS_LOG_INFO("%s: %s = %u", COLLECTING_THREAD_NAME.c_str(),
+                TXT_COLLECT_INTERVAL.c_str(), this->metrics_collecting_interval_);
 
         // start the thread
         this->metrics_collecting_thread_ = shared_ptr<thread>(new thread(threadStatic, this));
@@ -198,7 +199,7 @@ void MetricsSystem::stop() {
 }
 
 void MetricsSystem::threadFunc() {
-    METRICS_LOG_INFO("%s starting ...", COLLECTING_THREAD_NAME.c_str());
+    METRICS_LOG_INFO("%s: starting ...", COLLECTING_THREAD_NAME.c_str());
 
     bool b_stop = false;
     while(true) {

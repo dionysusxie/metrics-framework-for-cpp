@@ -71,7 +71,7 @@ void MetricsSink::config(StoreConf_SPtr conf) {
     // get lock first
     boost::lock_guard<recursive_timed_mutex> lock(this->public_mutex_);
 
-    // You can config it only the sink thread has been stopped.
+    // You can config it only when the sink thread has been stopped.
     if (this->sink_thread_.get() != NULL) {
         string err;
         {
@@ -88,11 +88,12 @@ void MetricsSink::config(StoreConf_SPtr conf) {
     // config self
     {
         this->setName(conf->getName());
-        METRICS_LOG_INFO("sink %s:", this->getName().c_str());
 
         this->max_queue_size_ = DEF_MAX_QUEUE_SIZE;
         conf->getUnsigned(TXT_MAX_QUEUE_SIZE, this->max_queue_size_);
-        METRICS_LOG_INFO("%s = %u", TXT_MAX_QUEUE_SIZE.c_str(), this->max_queue_size_);
+
+        METRICS_LOG_INFO("%s: %s = %u", this->getName().c_str(),
+                TXT_MAX_QUEUE_SIZE.c_str(), this->max_queue_size_);
     }
 
     // config the derived class
@@ -117,7 +118,7 @@ void MetricsSink::close() {
         {
             lock_guard<mutex> guard(this->thread_cmds_mutex_);
             this->thread_cmds_.push(CMD_STOP);
-            METRICS_LOG_INFO("Sink %s: put a command of CMD_STOP", this->getName().c_str());
+            METRICS_LOG_INFO("%s: put a command of CMD_STOP", this->getName().c_str());
         }
 
         // awake the sleeping thread
@@ -126,14 +127,14 @@ void MetricsSink::close() {
             if (!(this->has_work_)) {
                 this->has_work_ = true;
                 this->has_work_cond_.notify_all();
-                METRICS_LOG_INFO("Sink %s: awake the sleeping thread", this->getName().c_str());
+                METRICS_LOG_INFO("%s: awake the sleeping thread", this->getName().c_str());
             }
         }
 
         // wait for the ending of the sink thread
         {
             this->sink_thread_->join();
-            METRICS_LOG_INFO("Sink %s: thread stopped", this->getName().c_str());
+            METRICS_LOG_INFO("%s: thread stopped", this->getName().c_str());
         }
 
         // clear the flag
@@ -174,13 +175,13 @@ void MetricsSink::putMetrics(const std::vector<ConstMetricsRecordPtr>& records) 
             this->record_queue_.reset(new RECORDS_QUEUE);
         }
 
-        METRICS_LOG_DEBUG("Sink %s: queue size %u, new records %u", this->getName().c_str(),
+        METRICS_LOG_DEBUG("%s: queue size %u, new records %u", this->getName().c_str(),
                 this->record_queue_->size(), records.size());
 
         for (size_t i = 0; i < records.size(); i++) {
             if (this->record_queue_->size() >= this->max_queue_size_) {
                 const size_t num_lost_records = records.size() - i;
-                METRICS_LOG_WARNING("Sink %s: queue is full, %u records lost",
+                METRICS_LOG_WARNING("%s: queue is full, %u records lost",
                         this->getName().c_str(), num_lost_records);
                 break;
             }
@@ -231,7 +232,7 @@ void MetricsSink::threadFunc() {
 
         // consume the records
         {
-            METRICS_LOG_DEBUG("Sink %s begin to consume the metrics records", this->getName().c_str());
+            METRICS_LOG_DEBUG("%s: begin to consume the metrics records", this->getName().c_str());
 
             RECORDS_QUEUE_PTR tmp_queue;
             {
