@@ -20,11 +20,13 @@ typedef boost::shared_ptr<MetricsSource> MetricsSourcePtr;
 
 class MetricsSource: public BasicItem {
 public:
-    MetricsSource(const std::string& name, const std::string& desc);
+    MetricsSource(const std::string& name, const std::string& desc, const std::string& ctx);
     virtual ~MetricsSource();
 
 public:
     virtual ConstMetricsRecordPtr getMetrics() = 0;
+protected:
+    const std::string context_;
 };
 
 class Test: public MetricsSource {
