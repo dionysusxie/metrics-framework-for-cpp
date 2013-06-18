@@ -232,8 +232,6 @@ void MetricsSink::threadFunc() {
 
         // consume the records
         {
-            METRICS_LOG_DEBUG("%s: begin to consume the metrics records", this->getName().c_str());
-
             RECORDS_QUEUE_PTR tmp_queue;
             {
                 lock_guard<mutex> guard(this->queue_lock_);
@@ -241,7 +239,10 @@ void MetricsSink::threadFunc() {
                 this->record_queue_.reset(new RECORDS_QUEUE());
             }
 
-            this->consumeRecords(tmp_queue);
+            if (tmp_queue.get() != NULL) {
+                METRICS_LOG_DEBUG("%s: begin to consume the metrics records", this->getName().c_str());
+                this->consumeRecords(tmp_queue);
+            }
         }
 
         // sleep if no work to do
