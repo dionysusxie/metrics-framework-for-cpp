@@ -204,7 +204,10 @@ void MetricsSystem::threadFunc() {
     bool b_stop = false;
     while(true) {
 
+        //
         // Handle commands
+        //
+
         {
             lock_guard<mutex> lock(thread_cmds_mutex_);
 
@@ -228,11 +231,15 @@ void MetricsSystem::threadFunc() {
             break;
         }
 
+
+        //
         // collect metrics from all registered sources, then push to registered sinks
+        //
+
         {
             METRICS_LOG_DEBUG("%s: collect metrics snapshot", COLLECTING_THREAD_NAME.c_str());
 
-            // get copys of sources & sinks
+            // get temporary copys of sources & sinks
             SOURCE_CONTAINER_T tmp_sources;
             SINK_CONTAINER_T tmp_sinks;
             {
@@ -241,7 +248,7 @@ void MetricsSystem::threadFunc() {
                 tmp_sinks = this->sinks_;
             }
 
-            // collect
+            // collect metrics snapshot
             std::vector<ConstMetricsRecordPtr> records;
             {
                 for (SOURCE_CONTAINER_T::iterator it = tmp_sources.begin();
@@ -257,7 +264,11 @@ void MetricsSystem::threadFunc() {
             }
         }
 
+
+        //
         // sleep for some time if no work to do
+        //
+
         {
             lock_guard<mutex> guard(this->has_work_mutex_);
             if (!this->has_work_) {
