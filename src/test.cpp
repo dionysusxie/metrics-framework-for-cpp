@@ -65,14 +65,12 @@ void Ctrl_C::run() {
             }
         }
     }
-
-    cerr << "Exit now!" << endl;
 }
 
 void Ctrl_C::pressCtrlC() {
     boost::lock_guard<mutex> lock(this->mutex_);
     exit_now_ = true;
-    cerr << "\nCtrl + C is pressed!" << endl;
+    LOG_INFO("Ctrl + C is pressed!");
 }
 
 
