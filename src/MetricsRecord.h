@@ -24,7 +24,7 @@ typedef boost::shared_ptr<const MetricsRecord> ConstMetricsRecordPtr;
 // An immutable snapshot of metrics with a timestamp
 class MetricsRecord: public BasicItemReadOnly {
 public:
-    typedef std::map<std::string, MetricTag> TAGS_MAP_T;
+    typedef std::map<std::string, ConstMetricTagPtr> TAGS_MAP_T;
 public:
     MetricsRecord(const std::string& name, const std::string& desc,
             const std::string& ctx);
@@ -37,7 +37,7 @@ public:
     TAGS_MAP_T getTags() const;
 
     // non-const methods:
-    bool addTag(const MetricTag& tag);
+    bool addTag(ConstMetricTagPtr tag);
 
 private:
     const std::string context_;

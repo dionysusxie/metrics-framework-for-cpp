@@ -27,20 +27,25 @@ std::string MetricsRecord::getContext() const {
     return this->context_;
 }
 
-std::map<std::string, MetricTag> MetricsRecord::getTags() const {
+MetricsRecord::TAGS_MAP_T MetricsRecord::getTags() const {
     return this->tags_;
 }
 
-bool MetricsRecord::addTag(const MetricTag& tag) {
-    // check weather the tag exist or not
-    bool already_exists = this->tags_.count(tag.getName()) > 0;
-    if (already_exists) {
-        METRICS_LOG_ERROR("Tag <%s> already exists in metrics record <%s>",
-                tag.getName().c_str(), this->getName().c_str());
+bool MetricsRecord::addTag(ConstMetricTagPtr tag) {
+    if (tag.get() == NULL) {
+        METRICS_LOG_ERROR("NULL pointer encountered in MetricsRecord::addTag()!");
         return false;
     }
 
-    this->tags_[tag.getName()] = tag;
+    // check weather the tag exist or not
+    bool already_exists = this->tags_.count(tag->getName()) > 0;
+    if (already_exists) {
+        METRICS_LOG_ERROR("Tag <%s> already exists in metrics record <%s>",
+                tag->getName().c_str(), this->getName().c_str());
+        return false;
+    }
+
+    this->tags_[tag->getName()] = tag;
     return true;
 }
 

@@ -9,9 +9,14 @@
 #define METRICTAG_H_
 
 #include <string>
+#include "gmf_common.h"
 #include "BasicItem.h"
 
 namespace gmf {
+
+class MetricTag;
+typedef boost::shared_ptr<MetricTag> MetricTagPtr;
+typedef boost::shared_ptr<const MetricTag> ConstMetricTagPtr;
 
 class MetricTag: public BasicItem {
 public:

@@ -300,8 +300,8 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
                 gmf::MetricsRecord::TAGS_MAP_T tags = r->getTags();
                 for (gmf::MetricsRecord::TAGS_MAP_T::const_iterator it = tags.begin();
                         it != tags.end(); it++) {
-                    const string tag_name = it->second.getName();
-                    const string tag_value = it->second.getValue();
+                    const string tag_name = it->second->getName();
+                    const string tag_value = it->second->getValue();
                     os << tag_name << "=" << tag_value << ", ";
                 }
             }
