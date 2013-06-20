@@ -18,16 +18,33 @@ namespace gmf {
 
 class MetricSnapshot: public BasicItemReadOnly {
 public:
-    MetricSnapshot(MetricType type, const std::string& name, const std::string& desc);
+    MetricSnapshot(const std::string& name="", const std::string& desc="");
     virtual ~MetricSnapshot();
-
 public:
-    MetricType getType() const;
-    number::NumberCPtr getValue() const;
+    virtual MetricType getType() const = 0;
+    virtual number::Number_CRef getValue() const = 0;
+};
 
+
+class MetricCounterInt: public MetricSnapshot {
+public:
+    MetricCounterInt(int val, const std::string& name="", const std::string& desc="");
+public:
+    virtual MetricType getType() const;
+    virtual number::Number_CRef getValue() const;
 private:
-    enum MetricType type_;
-    number::NumberCPtr value_;
+    number::Int value_;
+};
+
+
+class MetricCounterLong: public MetricSnapshot {
+public:
+    MetricCounterLong(long val, const std::string& name="", const std::string& desc="");
+public:
+    virtual MetricType getType() const;
+    virtual number::Number_CRef getValue() const;
+private:
+    number::Long value_;
 };
 
 } /* namespace gmf */

@@ -25,7 +25,7 @@ enum NumType {
 class Number;
 typedef boost::shared_ptr<Number> NumberPtr;
 typedef boost::shared_ptr<const Number> NumberCPtr;
-
+typedef const Number& Number_CRef;
 
 class Number {
 public:
@@ -53,6 +53,19 @@ public:
     virtual double doubleValue() const;
 private:
     int value_;
+};
+
+
+class Long: public Number {
+public:
+    Long(long v);
+public:
+    virtual int intValue() const;
+    virtual long longValue() const;
+    virtual float floatValue() const;
+    virtual double doubleValue() const;
+private:
+    long value_;
 };
 
 } /* namespace number */
