@@ -1,12 +1,12 @@
 /*
- * AbstractMetric.h
+ * MetricSnapshot.h
  *
  *  Created on: May 30, 2013
  *      Author: xieliang
  */
 
-#ifndef ABSTRACTMETRIC_H_
-#define ABSTRACTMETRIC_H_
+#ifndef METRICSNAPSHOT_H_
+#define METRICSNAPSHOT_H_
 
 #include <string>
 #include "BasicItem.h"
@@ -15,10 +15,10 @@
 
 namespace gmf {
 
-class AbstractMetric: public BasicItem {
+class MetricSnapshot: public BasicItem {
 public:
-    AbstractMetric(MetricType type, const std::string& name, const std::string& desc);
-    virtual ~AbstractMetric();
+    MetricSnapshot(MetricType type, const std::string& name, const std::string& desc);
+    virtual ~MetricSnapshot();
 
 public:
     MetricType getType() const;
@@ -29,4 +29,4 @@ private:
 
 } /* namespace gmf */
 
-#endif /* ABSTRACTMETRIC_H_ */
+#endif /* METRICSNAPSHOT_H_ */

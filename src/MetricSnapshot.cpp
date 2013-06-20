@@ -5,21 +5,21 @@
  *      Author: xieliang
  */
 
-#include "AbstractMetric.h"
+#include "MetricSnapshot.h"
 
 namespace gmf {
 
-AbstractMetric::AbstractMetric(MetricType type, const std::string& name, const std::string& desc):
+MetricSnapshot::MetricSnapshot(MetricType type, const std::string& name, const std::string& desc):
     BasicItem(name, desc),
     type_(type) {
 
 }
 
-AbstractMetric::~AbstractMetric() {
+MetricSnapshot::~MetricSnapshot() {
     // TODO Auto-generated destructor stub
 }
 
-MetricType AbstractMetric::getType() const {
+MetricType MetricSnapshot::getType() const {
     return this->type_;
 }
 
