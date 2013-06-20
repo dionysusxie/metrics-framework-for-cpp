@@ -109,13 +109,24 @@ void MetricsSystem::registerYourSources() {
 // @note  If the name of the source to be registered already exists, false returned.
 bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
     if (src.get() == NULL) {
-        METRICS_LOG_WARNING("NULL ptr of the metrics-source to be registered");
+        const string err("NULL ptr of the metrics-source to be registered!");
+        METRICS_LOG_WARNING(err);
+        BOOST_ASSERT_MSG(false, err.c_str());
         return false;
     }
 
     bool registered_already = this->sources_.count(src->getName()) > 0;
     if (registered_already) {
-        METRICS_LOG_WARNING("Source with the name <%s> already registered", src->getName().c_str());
+        string err;
+        {
+            ostringstream os;
+            os << "Source with the name <" << src->getName() << "> already registered!";
+            err = os.str();
+        }
+
+        METRICS_LOG_WARNING(err);
+        BOOST_ASSERT_MSG(false, err.c_str());
+
         return false;
     }
 
