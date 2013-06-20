@@ -11,20 +11,23 @@
 #include <string>
 #include "BasicItem.h"
 #include "gmf_common.h"
+#include "Number.h"
 
 
 namespace gmf {
 
-class MetricSnapshot: public BasicItem {
+class MetricSnapshot: public BasicItemReadOnly {
 public:
     MetricSnapshot(MetricType type, const std::string& name, const std::string& desc);
     virtual ~MetricSnapshot();
 
 public:
     MetricType getType() const;
+    number::NumberCPtr getValue() const;
 
 private:
-    const enum MetricType type_;
+    enum MetricType type_;
+    number::NumberCPtr value_;
 };
 
 } /* namespace gmf */
