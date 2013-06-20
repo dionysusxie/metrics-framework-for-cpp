@@ -31,7 +31,7 @@ protected:
 
 class Test: public MetricsSource {
 public:
-    Test();
+    Test(const std::string& name = "test");
     virtual ConstMetricsRecordPtr getMetrics();
 };
 

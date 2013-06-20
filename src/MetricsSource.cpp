@@ -28,12 +28,12 @@ MetricsSource::~MetricsSource() {
 // class Test:
 //
 
-Test::Test():
-        MetricsSource("test-source", "a metric source for testing", "test") {
+Test::Test(const std::string& name):
+        MetricsSource(name, "a metric source for testing", "test") {
 }
 
 ConstMetricsRecordPtr Test::getMetrics() {
-    MetricsRecordPtr record(new MetricsRecord("test", this->getDescription(), this->context_));
+    MetricsRecordPtr record(new MetricsRecord(this->getName(), this->getDescription(), this->context_));
 
     // add some tags
     {

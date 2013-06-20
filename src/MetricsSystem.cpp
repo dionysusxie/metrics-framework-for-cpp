@@ -97,8 +97,11 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
 void MetricsSystem::registerYourSources() {
     // Register your metrics sources here!
 
-    source::MetricsSourcePtr src(new source::Test());
-    this->registerSource(src);
+    source::MetricsSourcePtr src1(new source::Test("test-1"));
+    this->registerSource(src1);
+
+    source::MetricsSourcePtr src2(new source::Test("test-2"));
+    this->registerSource(src2);
 }
 
 // @param  src  A ptr to metrics-source to be registered.
@@ -112,7 +115,7 @@ bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
 
     bool registered_already = this->sources_.count(src->getName()) > 0;
     if (registered_already) {
-        METRICS_LOG_WARNING("Source with the name %s already registered", src->getName().c_str());
+        METRICS_LOG_WARNING("Source with the name <%s> already registered", src->getName().c_str());
         return false;
     }
 
