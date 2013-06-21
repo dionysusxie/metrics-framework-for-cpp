@@ -33,17 +33,15 @@ Test::Test(const std::string& name):
 }
 
 ConstMetricsRecordPtr Test::getMetrics() {
-    MetricsRecordPtr record(new MetricsRecord(this->getName(), this->getDescription(), this->context_));
+    MetricsRecordBuilder record_bulider(this->getName(), this->getDescription(), this->context_);
 
     // add some tags
     {
-        ConstMetricTagPtr tag1(new MetricTag("name", "author_name", "Dio Xie"));
-        ConstMetricTagPtr tag2(new MetricTag("age", "author_age", "29"));
-        record->addTag(tag1);
-        record->addTag(tag2);
+        record_bulider.addTag("name", "author_name", "Dio Xie");
+        record_bulider.addTag("age", "author_age", "29");
     }
 
-    return record;
+    return record_bulider.getRecord();
 }
 
 } /* namespace source */

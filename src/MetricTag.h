@@ -17,6 +17,7 @@ namespace gmf {
 class MetricTag;
 typedef boost::shared_ptr<MetricTag> MetricTagPtr;
 typedef boost::shared_ptr<const MetricTag> ConstMetricTagPtr;
+typedef ConstMetricTagPtr MetricTagCPtr;
 
 class MetricTag: public BasicItemReadOnly {
 public:

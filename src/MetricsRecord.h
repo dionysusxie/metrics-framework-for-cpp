@@ -10,6 +10,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include "gmf_common.h"
 #include "BasicItem.h"
 #include "MetricTag.h"
@@ -24,24 +25,37 @@ typedef boost::shared_ptr<const MetricsRecord> ConstMetricsRecordPtr;
 // An immutable snapshot of metrics with a timestamp
 class MetricsRecord: public BasicItemReadOnly {
 public:
-    typedef std::map<std::string, ConstMetricTagPtr> TAGS_MAP_T;
+    typedef std::vector<MetricTagCPtr> TAG_VECTOR;
 public:
     MetricsRecord(const std::string& name, const std::string& desc,
-            const std::string& ctx);
+            const std::string& ctx, time_t t, const TAG_VECTOR& tags);
     virtual ~MetricsRecord();
 
 public:
-    // const methods:
-    time_t getTimestamp() const;
     std::string getContext() const;
-    TAGS_MAP_T getTags() const;
-
-    // non-const methods:
-    bool addTag(ConstMetricTagPtr tag);
+    time_t getTimestamp() const;
+    TAG_VECTOR getTags() const;
 
 private:
-    const std::string context_;
-    const time_t timestamp_;
+    std::string context_;
+    time_t timestamp_;
+    TAG_VECTOR tags_;
+};
+
+
+class MetricsRecordBuilder: public BasicItem {
+public:
+    typedef std::map<std::string, MetricTagPtr> TAGS_MAP_T;
+public:
+    MetricsRecordBuilder(const std::string& name="", const std::string& desc="", const std::string& ctx="");
+    ~MetricsRecordBuilder();
+public:
+    void setContext(const std::string& ctx);
+    void addTag(MetricTagPtr tag);
+    void addTag(const std::string& name, const std::string& desc, const std::string& value);
+    MetricsRecordPtr getRecord() const;
+private:
+    std::string context_;
     TAGS_MAP_T tags_;
 };
 
