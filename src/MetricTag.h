@@ -18,7 +18,7 @@ class MetricTag;
 typedef boost::shared_ptr<MetricTag> MetricTagPtr;
 typedef boost::shared_ptr<const MetricTag> ConstMetricTagPtr;
 
-class MetricTag: public BasicItem {
+class MetricTag: public BasicItemReadOnly {
 public:
     MetricTag(const std::string& name = "", const std::string& desc = "",
             const std::string& value = "");

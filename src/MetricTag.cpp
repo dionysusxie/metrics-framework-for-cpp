@@ -10,8 +10,8 @@
 namespace gmf {
 
 MetricTag::MetricTag(const std::string& name, const std::string& desc, const std::string& value):
-    BasicItem(name, desc),
-    value_(value) {
+        BasicItemReadOnly(name, desc),
+        value_(value) {
     // TODO Auto-generated constructor stub
 
 }
