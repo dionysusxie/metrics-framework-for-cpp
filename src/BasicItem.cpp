@@ -42,18 +42,35 @@ std::string BasicItemReadOnly::getDescription() const {
 //
 
 BasicItem::BasicItem(const std::string& name, const std::string& desc):
-        BasicItemReadOnly(name, desc) {
+        name_(name),
+        description_(desc) {
 }
 
 BasicItem::~BasicItem() {
 }
 
+std::string BasicItem::getName() {
+    boost::shared_lock<boost::shared_mutex> read_lock(this->name_mutex_);
+    return this->name_;
+}
+
 void BasicItem::setName(const std::string& name) {
+    boost::lock_guard<boost::shared_mutex> write_lock(this->name_mutex_);
     this->name_ = name;
 }
 
+std::string BasicItem::getDescription() {
+    boost::shared_lock<boost::shared_mutex> read_lock(this->description_mutex_);
+    return this->description_;
+}
+
 void BasicItem::setDescription(const std::string& desc) {
+    boost::lock_guard<boost::shared_mutex> write_lock(this->description_mutex_);
     this->description_ = desc;
+}
+
+BasicItemReadOnly BasicItem::getReadOnlyItem() {
+    return BasicItemReadOnly(getName(), getDescription());
 }
 
 } /* namespace gmf */
