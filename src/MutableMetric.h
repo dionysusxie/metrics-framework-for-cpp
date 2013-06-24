@@ -61,5 +61,18 @@ private:
     int value_;
 };
 
+
+class MutableCounterLong: public MutableCounter {
+public:
+    MutableCounterLong(const BasicItemReadOnly& info, long init_value = 0);
+protected:
+    virtual void incrImpl();
+    virtual void incrImpl(number::Number_CRef delta);
+    virtual number::NumberPtr getValueImpl();
+    virtual void snapshotImpl(MetricsRecordBuilder& builder);
+private:
+    long value_;
+};
+
 } /* namespace gmf */
 #endif /* MUTABLEMETRIC_H_ */

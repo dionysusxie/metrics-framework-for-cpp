@@ -100,7 +100,32 @@ number::NumberPtr MutableCounterInt::getValueImpl() {
 }
 
 void MutableCounterInt::snapshotImpl(MetricsRecordBuilder& builder) {
+}
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// class MutableCounterLong:
+//
+
+MutableCounterLong::MutableCounterLong(const BasicItemReadOnly& info, long init_value):
+        MutableCounter(info),
+        value_(init_value) {
+}
+
+void MutableCounterLong::incrImpl() {
+    this->value_++;
+}
+
+void MutableCounterLong::incrImpl(number::Number_CRef delta) {
+    this->value_ += delta.longValue();
+}
+
+number::NumberPtr MutableCounterLong::getValueImpl() {
+    return number::NumberPtr(new number::Long(this->value_));
+}
+
+void MutableCounterLong::snapshotImpl(MetricsRecordBuilder& builder) {
 }
 
 } /* namespace gmf */
