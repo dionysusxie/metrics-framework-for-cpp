@@ -17,9 +17,9 @@ namespace gmf {
 // class MetricsRecord:
 //
 
-MetricsRecord::MetricsRecord(const string& name, const string& desc, const string& ctx,
+MetricsRecord::MetricsRecord(const BasicItemReadOnly& info, const string& ctx,
         time_t t, const TAG_VECTOR& tags):
-        BasicItemReadOnly(name, desc),
+        BasicItemReadOnly(info),
         context_(ctx),
         timestamp_(t),
         tags_(tags) {
@@ -82,7 +82,7 @@ void MetricsRecordBuilder::addTag(const std::string& name, const std::string& de
     this->addTag(new_tag);
 }
 
-MetricsRecordPtr MetricsRecordBuilder::getRecord() const {
+MetricsRecordPtr MetricsRecordBuilder::getRecord() {
     const time_t time_now = time(NULL);
 
     MetricsRecord::TAG_VECTOR tag_vec;
@@ -93,9 +93,7 @@ MetricsRecordPtr MetricsRecordBuilder::getRecord() const {
         }
     }
 
-    MetricsRecordPtr record(new MetricsRecord(this->getName(), this->getDescription(),
-            this->context_, time_now, tag_vec));
-
+    MetricsRecordPtr record(new MetricsRecord(this->getReadOnlyItem(), this->context_, time_now, tag_vec));
     return record;
 }
 
