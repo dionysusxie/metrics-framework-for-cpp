@@ -306,10 +306,13 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
                 }
             }
 
+            // add 'new line'
+            os << "\n";
+
             out_line = os.str();
         }
 
-        cout << out_line << endl;
+        cout << out_line;
         records->pop();
     }
 }

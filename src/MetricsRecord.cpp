@@ -95,6 +95,7 @@ MetricsRecordPtr MetricsRecordBuilder::getRecord() const {
 
     MetricsRecordPtr record(new MetricsRecord(this->getName(), this->getDescription(),
             this->context_, time_now, tag_vec));
+
     return record;
 }
 
