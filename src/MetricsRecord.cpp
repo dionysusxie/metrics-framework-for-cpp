@@ -18,11 +18,12 @@ namespace gmf {
 //
 
 MetricsRecord::MetricsRecord(const BasicItemReadOnly& info, const string& ctx,
-        time_t t, const TAG_VECTOR& tags):
+        time_t t, const TAG_VECTOR& tags, const METRIC_SNAPSHOT_VEC& metric_snapshots):
         BasicItemReadOnly(info),
         context_(ctx),
         timestamp_(t),
-        tags_(tags) {
+        tags_(tags),
+        metric_snapshots_(metric_snapshots) {
 }
 
 MetricsRecord::~MetricsRecord() {
@@ -38,6 +39,10 @@ time_t MetricsRecord::getTimestamp() const {
 
 MetricsRecord::TAG_VECTOR MetricsRecord::getTags() const {
     return this->tags_;
+}
+
+MetricsRecord::METRIC_SNAPSHOT_VEC MetricsRecord::getMetrics() const {
+    return this->metric_snapshots_;
 }
 
 
@@ -82,6 +87,33 @@ void MetricsRecordBuilder::addTag(const std::string& name, const std::string& de
     this->addTag(new_tag);
 }
 
+void MetricsRecordBuilder::addCounter(MetricSnapshotPtr metric) {
+    if (metric.get() == NULL) {
+        BOOST_ASSERT_MSG(false, "NULL pointer encountered in MetricsRecordBuilder::addCounter()!");
+        return;
+    }
+
+    // check weather the metric exist or not
+    bool already_exists = this->metrics_.count(metric->getName()) > 0;
+    if (already_exists) {
+        METRICS_LOG_ERROR("Metric <%s> already exists in metrics record <%s>", metric->getName().c_str(), this->getName().c_str());
+        BOOST_ASSERT(false);
+    }
+    else {
+        this->metrics_[metric->getName()] = metric;
+    }
+}
+
+void MetricsRecordBuilder::addCounter(const BasicItemReadOnly& info, int val) {
+    MetricSnapshotPtr new_counter(new MetricCounterInt(info, val));
+    addCounter(new_counter);
+}
+
+void MetricsRecordBuilder::addCounter(const BasicItemReadOnly& info, long val) {
+    MetricSnapshotPtr new_counter(new MetricCounterLong(info, val));
+    addCounter(new_counter);
+}
+
 MetricsRecordPtr MetricsRecordBuilder::getRecord() {
     const time_t time_now = time(NULL);
 
@@ -93,7 +125,15 @@ MetricsRecordPtr MetricsRecordBuilder::getRecord() {
         }
     }
 
-    MetricsRecordPtr record(new MetricsRecord(this->getReadOnlyItem(), this->context_, time_now, tag_vec));
+    MetricsRecord::METRIC_SNAPSHOT_VEC metric_snapshot_vec;
+    {
+        metric_snapshot_vec.reserve(this->metrics_.size());
+        for (METRICS_MAP_T::const_iterator it = this->metrics_.begin(); it != this->metrics_.end(); it++) {
+            metric_snapshot_vec.push_back(it->second);
+        }
+    }
+
+    MetricsRecordPtr record(new MetricsRecord(this->getReadOnlyItem(), this->context_, time_now, tag_vec, metric_snapshot_vec));
     return record;
 }
 

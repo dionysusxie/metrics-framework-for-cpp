@@ -9,6 +9,7 @@
 #define METRICSSOURCE_H_
 
 #include "MetricsRecord.h"
+#include "MutableMetric.h"
 #include "gmf_common.h"
 
 namespace gmf {
@@ -33,6 +34,8 @@ class Test: public MetricsSource {
 public:
     Test(const std::string& name = "test");
     virtual ConstMetricsRecordPtr getMetrics();
+private:
+    MutableCounterInt read_times_;
 };
 
 } /* namespace source */

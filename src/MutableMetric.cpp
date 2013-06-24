@@ -100,6 +100,7 @@ number::NumberPtr MutableCounterInt::getValueImpl() {
 }
 
 void MutableCounterInt::snapshotImpl(MetricsRecordBuilder& builder) {
+    builder.addCounter(this->getReadOnlyItem(), this->value_);
 }
 
 
@@ -126,6 +127,7 @@ number::NumberPtr MutableCounterLong::getValueImpl() {
 }
 
 void MutableCounterLong::snapshotImpl(MetricsRecordBuilder& builder) {
+    builder.addCounter(this->getReadOnlyItem(), this->value_);
 }
 
 } /* namespace gmf */

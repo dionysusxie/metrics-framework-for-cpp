@@ -302,8 +302,21 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
                         it != tags.end(); it++) {
                     const string tag_name = (*it)->getName();
                     const string tag_value = (*it)->getValue();
-                    os << tag_name << "=" << tag_value << ", ";
+                    os << tag_name << "=" << tag_value << " ";
                 }
+                os << "; ";
+            }
+
+            // add metric-snapshot
+            {
+                gmf::MetricsRecord::METRIC_SNAPSHOT_VEC metrics = r->getMetrics();
+                for (gmf::MetricsRecord::METRIC_SNAPSHOT_VEC::const_iterator it = metrics.begin();
+                        it != metrics.end(); it++) {
+                    const string name = (*it)->getName();
+                    number::NumberPtr value = (*it)->getValue();
+                    os << name << "=" << value->intValue() << " ";
+                }
+                os << "; ";
             }
 
             // add 'new line'

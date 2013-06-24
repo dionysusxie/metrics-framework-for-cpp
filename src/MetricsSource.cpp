@@ -29,7 +29,9 @@ MetricsSource::~MetricsSource() {
 //
 
 Test::Test(const std::string& name):
-        MetricsSource(name, "a metric source for testing", "test") {
+        MetricsSource(name, "a metric source for testing", "test"),
+        read_times_(BasicItemReadOnly("read_times"), 0) {
+    this->read_times_.incr();
 }
 
 ConstMetricsRecordPtr Test::getMetrics() {
@@ -39,6 +41,11 @@ ConstMetricsRecordPtr Test::getMetrics() {
     {
         record_bulider.addTag("name", "author_name", "Dio Xie");
         record_bulider.addTag("age", "author_age", "29");
+    }
+
+    // add metrics
+    {
+        this->read_times_.snapshot(record_bulider);
     }
 
     return record_bulider.getRecord();
