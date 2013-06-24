@@ -33,6 +33,7 @@ private:
 class BasicItem {
 public:
     BasicItem(const std::string& name = "", const std::string& desc = "");
+    BasicItem(const BasicItemReadOnly&);
     virtual ~BasicItem();
 public:
     std::string getName();

@@ -46,6 +46,11 @@ BasicItem::BasicItem(const std::string& name, const std::string& desc):
         description_(desc) {
 }
 
+BasicItem::BasicItem(const BasicItemReadOnly& info):
+    name_(info.getName()),
+    description_(info.getDescription()) {
+}
+
 BasicItem::~BasicItem() {
 }
 
