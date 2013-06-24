@@ -43,6 +43,11 @@ public:
 
     BasicItemReadOnly getReadOnlyItem();
 private:
+    // disable copy constructor
+    BasicItem(const BasicItem&);
+    // disable operator =
+    BasicItem& operator = (const BasicItem&);
+private:
     std::string name_;
     boost::shared_mutex name_mutex_;
 
