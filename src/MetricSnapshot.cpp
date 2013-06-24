@@ -14,8 +14,8 @@ namespace gmf {
 // class MetricSnapshot:
 //
 
-MetricSnapshot::MetricSnapshot(const std::string& name, const std::string& desc):
-        BasicItemReadOnly(name, desc) {
+MetricSnapshot::MetricSnapshot(const BasicItemReadOnly& info):
+        BasicItemReadOnly(info) {
 }
 
 MetricSnapshot::~MetricSnapshot() {
@@ -27,19 +27,18 @@ MetricSnapshot::~MetricSnapshot() {
 // class MetricCounterInt:
 //
 
-MetricCounterInt::MetricCounterInt(int val, const std::string& name, const std::string& desc):
-        MetricSnapshot(name, desc),
+MetricCounterInt::MetricCounterInt(const BasicItemReadOnly& info, int val):
+        MetricSnapshot(info),
         value_(val) {
 }
 
-MetricType
-MetricCounterInt::getType() const {
+MetricType MetricCounterInt::getType() const {
     return gmf::COUNTER;
 }
 
-number::Number_CRef
-MetricCounterInt::getValue() const {
-    return this->value_;
+number::NumberPtr MetricCounterInt::getValue() const {
+    number::NumberPtr val(new number::Int(this->value_));
+    return val;
 }
 
 
@@ -48,19 +47,18 @@ MetricCounterInt::getValue() const {
 // class MetricCounterLong:
 //
 
-MetricCounterLong::MetricCounterLong(long val, const std::string& name, const std::string& desc):
-        MetricSnapshot(name, desc),
+MetricCounterLong::MetricCounterLong(const BasicItemReadOnly& info, long val):
+        MetricSnapshot(info),
         value_(val) {
 }
 
-MetricType
-MetricCounterLong::getType() const {
+MetricType MetricCounterLong::getType() const {
     return gmf::COUNTER;
 }
 
-number::Number_CRef
-MetricCounterLong::getValue() const {
-    return this->value_;
+number::NumberPtr MetricCounterLong::getValue() const {
+    number::NumberPtr val(new number::Long(this->value_));
+    return val;
 }
 
 } /* namespace gmf */

@@ -16,35 +16,39 @@
 
 namespace gmf {
 
+class MetricSnapshot;
+typedef boost::shared_ptr<MetricSnapshot> MetricSnapshotPtr;
+typedef boost::shared_ptr<const MetricSnapshot> MetricSnapshotCPtr;
+
 class MetricSnapshot: public BasicItemReadOnly {
 public:
-    MetricSnapshot(const std::string& name="", const std::string& desc="");
+    MetricSnapshot(const BasicItemReadOnly& info);
     virtual ~MetricSnapshot();
 public:
     virtual MetricType getType() const = 0;
-    virtual number::Number_CRef getValue() const = 0;
+    virtual number::NumberPtr getValue() const = 0;
 };
 
 
 class MetricCounterInt: public MetricSnapshot {
 public:
-    MetricCounterInt(int val, const std::string& name="", const std::string& desc="");
+    MetricCounterInt(const BasicItemReadOnly& info, int val);
 public:
     virtual MetricType getType() const;
-    virtual number::Number_CRef getValue() const;
+    virtual number::NumberPtr getValue() const;
 private:
-    number::Int value_;
+    int value_;
 };
 
 
 class MetricCounterLong: public MetricSnapshot {
 public:
-    MetricCounterLong(long val, const std::string& name="", const std::string& desc="");
+    MetricCounterLong(const BasicItemReadOnly& info, long val);
 public:
     virtual MetricType getType() const;
-    virtual number::Number_CRef getValue() const;
+    virtual number::NumberPtr getValue() const;
 private:
-    number::Long value_;
+    long value_;
 };
 
 } /* namespace gmf */
