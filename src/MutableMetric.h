@@ -10,25 +10,55 @@
 
 #include <boost/thread.hpp>
 #include "MetricsRecord.h"
+#include "Number.h"
 
 
 namespace gmf {
 
-class MutableMetric {
+class MutableMetric: public BasicItem {
 public:
-    MutableMetric();
+    MutableMetric(const BasicItemReadOnly& info);
     virtual ~MutableMetric();
 public:
-    // all: if true, snapshot unchanged metrics as well
-    virtual void snapshot(MetricsRecordBuilder& builder, bool all) = 0;
+    void snapshot(MetricsRecordBuilder& builder, bool all);
     void snapshot(MetricsRecordBuilder& builder);
     bool changed();
 protected:
+    virtual void snapshotImpl(MetricsRecordBuilder& builder) = 0;
     void setChanged();
     void clearChanged();
 private:
     bool changed_;
     boost::shared_mutex changed_mutex_;
+};
+
+
+class MutableCounter: public MutableMetric {
+public:
+    MutableCounter(const BasicItemReadOnly&);
+public:
+    void incr();
+    void incr(number::Number_CRef delta);
+    number::NumberPtr getValue();
+protected:
+    virtual void incrImpl() = 0;
+    virtual void incrImpl(number::Number_CRef delta) = 0;
+    virtual number::NumberPtr getValueImpl() = 0;
+private:
+    boost::shared_mutex value_mutex_;
+};
+
+
+class MutableCounterInt: public MutableCounter {
+public:
+    MutableCounterInt(const BasicItemReadOnly& info, int init_value = 0);
+protected:
+    virtual void incrImpl();
+    virtual void incrImpl(number::Number_CRef delta);
+    virtual number::NumberPtr getValueImpl();
+    virtual void snapshotImpl(MetricsRecordBuilder& builder);
+private:
+    int value_;
 };
 
 } /* namespace gmf */
