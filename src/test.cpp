@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
 
         // config
         {
-            LOG_INFO("Begin to cofig");
+            LOG_INFO("Begin to config");
 
             // parse the config file
             StoreConf_SPtr conf(new StoreConf);
