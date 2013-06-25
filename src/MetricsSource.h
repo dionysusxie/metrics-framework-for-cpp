@@ -36,6 +36,7 @@ public:
     virtual ConstMetricsRecordPtr getMetrics();
 private:
     MutableCounterInt read_times_;
+    MutableCounterInt write_times_;
 };
 
 } /* namespace source */

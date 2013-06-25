@@ -30,8 +30,10 @@ MetricsSource::~MetricsSource() {
 
 Test::Test(const std::string& name):
         MetricsSource(name, "a metric source for testing", "test"),
-        read_times_(BasicItemReadOnly("read_times"), 0) {
+        read_times_(BasicItemReadOnly("read_times"), 0),
+        write_times_(BasicItemReadOnly("write_times"), 0) {
     this->read_times_.incr();
+    this->write_times_.incr();
 }
 
 ConstMetricsRecordPtr Test::getMetrics() {
@@ -46,6 +48,7 @@ ConstMetricsRecordPtr Test::getMetrics() {
     // add metrics
     {
         this->read_times_.snapshot(record_bulider);
+        this->write_times_.snapshot(record_bulider, true);
     }
 
     return record_bulider.getRecord();
