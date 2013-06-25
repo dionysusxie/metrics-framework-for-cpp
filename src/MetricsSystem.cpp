@@ -42,7 +42,7 @@ MetricsSystem::~MetricsSystem() {
 
 bool MetricsSystem::config(StoreConf_SPtr conf) {
     boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
-    METRICS_LOG_INFO("Begin to cofig the metrics system");
+    METRICS_LOG_INFO("Begin to config the metrics system");
 
     // pre-assertions:
     {
