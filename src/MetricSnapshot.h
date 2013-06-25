@@ -33,27 +33,36 @@ public:
 };
 
 
-class MetricCounterInt: public MetricSnapshot {
+//
+// Counter
+//
+
+class MetricCounter: public MetricSnapshot {
+public:
+    MetricCounter(const BasicItemReadOnly& info);
+    virtual MetricType getType() const;
+};
+
+class MetricCounterInt: public MetricCounter {
 public:
     MetricCounterInt(const BasicItemReadOnly& info, int val);
-public:
-    virtual MetricType getType() const;
     virtual number::NumberPtr getValue() const;
 private:
     int value_;
 };
 
-
-class MetricCounterLong: public MetricSnapshot {
+class MetricCounterLong: public MetricCounter {
 public:
     MetricCounterLong(const BasicItemReadOnly& info, long val);
-public:
-    virtual MetricType getType() const;
     virtual number::NumberPtr getValue() const;
 private:
     long value_;
 };
 
+
+//
+// Gauge
+//
 
 class MetricGauge: public MetricSnapshot {
 public:

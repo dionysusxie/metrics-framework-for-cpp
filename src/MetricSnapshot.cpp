@@ -30,16 +30,26 @@ MetricSnapshot::~MetricSnapshot() {
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
+// class MetricCounter:
+//
+
+MetricCounter::MetricCounter(const BasicItemReadOnly& info):
+        MetricSnapshot(info) {
+}
+
+MetricType MetricCounter::getType() const {
+    return gmf::COUNTER;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
 // class MetricCounterInt:
 //
 
 MetricCounterInt::MetricCounterInt(const BasicItemReadOnly& info, int val):
-        MetricSnapshot(info),
+        MetricCounter(info),
         value_(val) {
-}
-
-MetricType MetricCounterInt::getType() const {
-    return gmf::COUNTER;
 }
 
 number::NumberPtr MetricCounterInt::getValue() const {
@@ -54,12 +64,8 @@ number::NumberPtr MetricCounterInt::getValue() const {
 //
 
 MetricCounterLong::MetricCounterLong(const BasicItemReadOnly& info, long val):
-        MetricSnapshot(info),
+        MetricCounter(info),
         value_(val) {
-}
-
-MetricType MetricCounterLong::getType() const {
-    return gmf::COUNTER;
 }
 
 number::NumberPtr MetricCounterLong::getValue() const {
