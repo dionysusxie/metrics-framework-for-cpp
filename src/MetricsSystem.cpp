@@ -200,15 +200,19 @@ void MetricsSystem::stop() {
     }
 
 
-    //
-    // stop sinks
-    //
+    // clear sources
+    {
+        this->sources_.clear();
+    }
 
+    // stop sinks
     {
         for (SINK_CONTAINER_T::iterator it = this->sinks_.begin();
                 it != this->sinks_.end(); it++) {
             it->second->close();
         }
+
+        this->sinks_.clear();
     }
 }
 
