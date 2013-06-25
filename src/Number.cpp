@@ -103,5 +103,59 @@ double Long::doubleValue() const {
     return static_cast<double>(this->value_);
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// class Float:
+//
+
+Float::Float(float v):
+        Number(FLOAT),
+        value_(v) {
+}
+
+int Float::intValue() const {
+    return static_cast<int>(this->value_);
+}
+
+long Float::longValue() const {
+    return static_cast<long>(this->value_);
+}
+
+float Float::floatValue() const {
+    return static_cast<float>(this->value_);
+}
+
+double Float::doubleValue() const {
+    return static_cast<double>(this->value_);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// class Double:
+//
+
+Double::Double(double v):
+        Number(DOUBLE),
+        value_(v) {
+}
+
+int Double::intValue() const {
+    return static_cast<int>(this->value_);
+}
+
+long Double::longValue() const {
+    return static_cast<long>(this->value_);
+}
+
+float Double::floatValue() const {
+    return static_cast<float>(this->value_);
+}
+
+double Double::doubleValue() const {
+    return static_cast<double>(this->value_);
+}
+
 } /* namespace number */
 } /* namespace gmf */

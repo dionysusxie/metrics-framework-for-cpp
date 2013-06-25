@@ -72,6 +72,32 @@ private:
     long value_;
 };
 
+
+class Float: public Number {
+public:
+    Float(float v);
+public:
+    virtual int intValue() const;
+    virtual long longValue() const;
+    virtual float floatValue() const;
+    virtual double doubleValue() const;
+private:
+    float value_;
+};
+
+
+class Double: public Number {
+public:
+    Double(double v);
+public:
+    virtual int intValue() const;
+    virtual long longValue() const;
+    virtual float floatValue() const;
+    virtual double doubleValue() const;
+private:
+    double value_;
+};
+
 } /* namespace number */
 } /* namespace gmf */
 #endif /* NUMBER_H_ */
