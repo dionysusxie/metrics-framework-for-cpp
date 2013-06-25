@@ -8,6 +8,7 @@
 #ifndef NUMBER_H_
 #define NUMBER_H_
 
+#include <iostream>
 #include "gmf_common.h"
 
 namespace gmf {
@@ -26,6 +27,9 @@ class Number;
 typedef boost::shared_ptr<Number> NumberPtr;
 typedef boost::shared_ptr<const Number> NumberCPtr;
 typedef const Number& Number_CRef;
+
+extern std::ostream& operator << (std::ostream& os, const Number& num);
+
 
 class Number {
 public:

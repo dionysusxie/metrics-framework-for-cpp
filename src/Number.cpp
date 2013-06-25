@@ -10,6 +10,29 @@
 namespace gmf {
 namespace number {
 
+std::ostream& operator << (std::ostream& os, const Number& num) {
+    switch (num.type()) {
+    case INT:
+        os << num.intValue();
+        break;
+    case LONG:
+        os << num.longValue();
+        break;
+    case FLOAT:
+        os << num.floatValue();
+        break;
+    case DOUBLE:
+        os << num.doubleValue();
+        break;
+    default:
+        BOOST_ASSERT(false);
+        break;
+    }
+
+    return os;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //
 // class Number:

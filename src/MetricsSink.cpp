@@ -328,11 +328,11 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
                     const string name = (*it)->getName();
                     number::NumberPtr value = (*it)->getValue();
                     if (is_first_item) {
-                        os << name << "=" << value->intValue();
+                        os << name << "=" << (*value);
                         is_first_item = false;
                     }
                     else {
-                        os << ", " << name << "=" << value->intValue();
+                        os << ", " << name << "=" << (*value);
                     }
                 }
 
