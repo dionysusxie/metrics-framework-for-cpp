@@ -48,7 +48,7 @@ private:
     boost::shared_mutex value_mutex_;
 };
 
-
+// thread safe!
 class MutableCounterInt: public MutableCounter {
 public:
     MutableCounterInt(const BasicItemReadOnly& info, int init_value = 0);
@@ -61,7 +61,7 @@ private:
     int value_;
 };
 
-
+// thread safe!
 class MutableCounterLong: public MutableCounter {
 public:
     MutableCounterLong(const BasicItemReadOnly& info, long init_value = 0);
