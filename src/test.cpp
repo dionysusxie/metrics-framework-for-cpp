@@ -44,11 +44,17 @@ void Ctrl_C::sigHandler(int sig_num) {
 }
 
 Ctrl_C::Ctrl_C():
-        exit_now_(false) {
+        exit_now_(false),
+        func_(NULL) {
     signal(SIGINT, Ctrl_C::sigHandler);
 }
 
 Ctrl_C::~Ctrl_C() {
+    this->func_ = NULL;
+}
+
+void Ctrl_C::registerFunc(Function fn) {
+    this->func_ = fn;
 }
 
 void Ctrl_C::run() {
@@ -57,9 +63,14 @@ void Ctrl_C::run() {
     while (run) {
         sleep(1);
 
-        // we should exit now?
+        // Call registered function
+        if (this->func_ != NULL) {
+            (*this->func_)();
+        }
+
+        // Should we exit now?
         {
-            boost::lock_guard<mutex> lock(this->mutex_);
+            boost::lock_guard<mutex> lock(this->exit_mutex_);
             if (exit_now_) {
                 run = false;
             }
@@ -68,7 +79,7 @@ void Ctrl_C::run() {
 }
 
 void Ctrl_C::pressCtrlC() {
-    boost::lock_guard<mutex> lock(this->mutex_);
+    boost::lock_guard<mutex> lock(this->exit_mutex_);
     exit_now_ = true;
     LOG_INFO("Ctrl + C is pressed!");
 }
@@ -82,6 +93,10 @@ void Ctrl_C::pressCtrlC() {
 void print_usage(const char* program_name) {
     cout << "Usage: " << program_name << " [-h] [-c config_file] [-l log_config_file] [-d]" << endl;
     cout << "Default config_file: " << DEFAULT_CONFIG_FILE << endl;
+}
+
+void callback() {
+    cout << "Hi! This is Dio xie." << endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -157,6 +172,7 @@ int main(int argc, char* argv[]) {
         }
 
         // run until the user interrupt it by pressing Ctrl + C
+        Ctrl_C::getSingleton()->registerFunc(callback);
         Ctrl_C::getSingleton()->run();
 
         // close the Metrics System before exiting

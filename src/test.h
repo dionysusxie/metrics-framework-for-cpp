@@ -15,6 +15,8 @@
 // press Ctrl + C to exit the app
 class Ctrl_C {
 public:
+    typedef void (*Function)();
+public:
     static boost::shared_ptr<Ctrl_C> getSingleton();
     static void sigHandler(int);
 
@@ -22,6 +24,7 @@ public:
     virtual ~Ctrl_C();
 
 public:
+    void registerFunc(Function fn);
     void run();
 
 private:
@@ -33,7 +36,9 @@ private:
 
 private:
     bool exit_now_;
-    boost::mutex mutex_;
+    boost::mutex exit_mutex_;
+
+    Function func_;
 };
 
 
