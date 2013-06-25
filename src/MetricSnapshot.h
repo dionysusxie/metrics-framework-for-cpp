@@ -20,6 +20,9 @@ class MetricSnapshot;
 typedef boost::shared_ptr<MetricSnapshot> MetricSnapshotPtr;
 typedef boost::shared_ptr<const MetricSnapshot> MetricSnapshotCPtr;
 
+extern std::ostream& operator << (std::ostream&, const MetricSnapshot&);
+
+
 class MetricSnapshot: public BasicItemReadOnly {
 public:
     MetricSnapshot(const BasicItemReadOnly& info);

@@ -325,14 +325,12 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
 
                 for (gmf::MetricsRecord::METRIC_SNAPSHOT_VEC::const_iterator it = metrics.begin();
                         it != metrics.end(); it++) {
-                    const string name = (*it)->getName();
-                    number::NumberPtr value = (*it)->getValue();
                     if (is_first_item) {
-                        os << name << "=" << (*value);
+                        os << (**it);
                         is_first_item = false;
                     }
                     else {
-                        os << ", " << name << "=" << (*value);
+                        os << ", " << (**it);
                     }
                 }
 

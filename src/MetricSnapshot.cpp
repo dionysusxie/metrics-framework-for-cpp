@@ -9,6 +9,12 @@
 
 namespace gmf {
 
+std::ostream& operator << (std::ostream& os, const MetricSnapshot& m) {
+    os << "(" << m.getName() << "," << m.getType() << "," << (*m.getValue()) << ")";
+    return os;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //
 // class MetricSnapshot:
