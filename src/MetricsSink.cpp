@@ -293,30 +293,50 @@ void SinkToConsole::consumeRecords(RECORDS_QUEUE_PTR records) {
             ostringstream os;
 
             os << r->getTimestamp() << "  " << r->getName() << "." << r->getContext()
-               << ", " << r->getDescription() << "; ";
+               << ", " << r->getDescription() << ";  ";
 
             // add tags
             {
+                os << "tags:{";
+                bool is_first_item = true;
                 gmf::MetricsRecord::TAG_VECTOR tags = r->getTags();
+
                 for (gmf::MetricsRecord::TAG_VECTOR::const_iterator it = tags.begin();
                         it != tags.end(); it++) {
                     const string tag_name = (*it)->getName();
                     const string tag_value = (*it)->getValue();
-                    os << tag_name << "=" << tag_value << " ";
+                    if (is_first_item) {
+                        os << tag_name << "=" << tag_value;
+                        is_first_item = false;
+                    }
+                    else {
+                        os << ", " << tag_name << "=" << tag_value;
+                    }
                 }
-                os << "; ";
+
+                os << "}  ";
             }
 
             // add metric-snapshot
             {
+                os << "metrics:{";
+                bool is_first_item = true;
                 gmf::MetricsRecord::METRIC_SNAPSHOT_VEC metrics = r->getMetrics();
+
                 for (gmf::MetricsRecord::METRIC_SNAPSHOT_VEC::const_iterator it = metrics.begin();
                         it != metrics.end(); it++) {
                     const string name = (*it)->getName();
                     number::NumberPtr value = (*it)->getValue();
-                    os << name << "=" << value->intValue() << " ";
+                    if (is_first_item) {
+                        os << name << "=" << value->intValue();
+                        is_first_item = false;
+                    }
+                    else {
+                        os << ", " << name << "=" << value->intValue();
+                    }
                 }
-                os << "; ";
+
+                os << "}";
             }
 
             // add 'new line'
