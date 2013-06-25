@@ -53,7 +53,7 @@ Ctrl_C::~Ctrl_C() {
     this->func_ = NULL;
 }
 
-void Ctrl_C::registerFunc(Function fn) {
+void Ctrl_C::registerCallback(CallbackFunc fn) {
     this->func_ = fn;
 }
 
@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
         }
 
         // run until the user interrupt it by pressing Ctrl + C
-        Ctrl_C::getSingleton()->registerFunc(callback);
+        Ctrl_C::getSingleton()->registerCallback(callback);
         Ctrl_C::getSingleton()->run();
 
         // close the Metrics System before exiting
