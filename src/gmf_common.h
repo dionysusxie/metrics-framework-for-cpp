@@ -28,6 +28,9 @@ enum MetricType {
     MAX
 };
 
+extern std::string toString(enum MetricType);
+extern std::ostream& operator << (std::ostream&, MetricType);
+
 extern const std::string METRICS_LOG_CONTEXT;
 extern const std::string TXT_SINK;
 }
