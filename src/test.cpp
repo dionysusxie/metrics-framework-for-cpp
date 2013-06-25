@@ -98,8 +98,6 @@ void print_usage(const char* program_name) {
 }
 
 void callback() {
-    cout << "Hi! This is Dio xie." << endl;
-
     if (g_test_src.get() != NULL) {
         g_test_src->incrReadTimes();
         g_test_src->incrWriteTimes();
