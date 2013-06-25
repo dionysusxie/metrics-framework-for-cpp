@@ -64,7 +64,7 @@ public:
 
 class MetricGaugeInt: public MetricGauge {
 public:
-    MetricGaugeInt(const BasicItemReadOnly& info, int init_val);
+    MetricGaugeInt(const BasicItemReadOnly& info, int val);
 public:
     virtual number::NumberPtr getValue() const;
 private:
@@ -73,7 +73,7 @@ private:
 
 class MetricGaugeLong: public MetricGauge {
 public:
-    MetricGaugeLong(const BasicItemReadOnly& info, long init_val);
+    MetricGaugeLong(const BasicItemReadOnly& info, long val);
 public:
     virtual number::NumberPtr getValue() const;
 private:

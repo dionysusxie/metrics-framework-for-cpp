@@ -87,9 +87,9 @@ MetricType MetricGauge::getType() const {
 // class MetricGaugeInt:
 //
 
-MetricGaugeInt::MetricGaugeInt(const BasicItemReadOnly& info, int init_val):
+MetricGaugeInt::MetricGaugeInt(const BasicItemReadOnly& info, int val):
         MetricGauge(info),
-        value_(init_val) {
+        value_(val) {
 }
 
 number::NumberPtr MetricGaugeInt::getValue() const {
@@ -103,9 +103,9 @@ number::NumberPtr MetricGaugeInt::getValue() const {
 // class MetricGaugeLong:
 //
 
-MetricGaugeLong::MetricGaugeLong(const BasicItemReadOnly& info, long init_val):
+MetricGaugeLong::MetricGaugeLong(const BasicItemReadOnly& info, long val):
         MetricGauge(info),
-        value_(init_val) {
+        value_(val) {
 }
 
 number::NumberPtr MetricGaugeLong::getValue() const {
