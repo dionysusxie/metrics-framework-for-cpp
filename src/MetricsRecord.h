@@ -61,7 +61,7 @@ public:
     void addTag(MetricTagPtr tag);
     void addTag(const std::string& name, const std::string& desc, const std::string& value);
 
-    void addCounter(MetricSnapshotPtr metric);
+    void add(MetricSnapshotPtr metric);
     void addCounter(const BasicItemReadOnly& info, int val);
     void addCounter(const BasicItemReadOnly& info, long val);
 

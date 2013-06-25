@@ -87,7 +87,7 @@ void MetricsRecordBuilder::addTag(const std::string& name, const std::string& de
     this->addTag(new_tag);
 }
 
-void MetricsRecordBuilder::addCounter(MetricSnapshotPtr metric) {
+void MetricsRecordBuilder::add(MetricSnapshotPtr metric) {
     if (metric.get() == NULL) {
         BOOST_ASSERT_MSG(false, "NULL pointer encountered in MetricsRecordBuilder::addCounter()!");
         return;
@@ -106,12 +106,12 @@ void MetricsRecordBuilder::addCounter(MetricSnapshotPtr metric) {
 
 void MetricsRecordBuilder::addCounter(const BasicItemReadOnly& info, int val) {
     MetricSnapshotPtr new_counter(new MetricCounterInt(info, val));
-    addCounter(new_counter);
+    add(new_counter);
 }
 
 void MetricsRecordBuilder::addCounter(const BasicItemReadOnly& info, long val) {
     MetricSnapshotPtr new_counter(new MetricCounterLong(info, val));
-    addCounter(new_counter);
+    add(new_counter);
 }
 
 MetricsRecordPtr MetricsRecordBuilder::getRecord() {
