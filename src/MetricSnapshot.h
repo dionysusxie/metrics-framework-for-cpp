@@ -80,6 +80,24 @@ private:
     long value_;
 };
 
+class MetricGaugeFloat: public MetricGauge {
+public:
+    MetricGaugeFloat(const BasicItemReadOnly& info, float val);
+public:
+    virtual number::NumberPtr getValue() const;
+private:
+    float value_;
+};
+
+class MetricGaugeDouble: public MetricGauge {
+public:
+    MetricGaugeDouble(const BasicItemReadOnly& info, double val);
+public:
+    virtual number::NumberPtr getValue() const;
+private:
+    double value_;
+};
+
 } /* namespace gmf */
 
 #endif /* METRICSNAPSHOT_H_ */

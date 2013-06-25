@@ -113,4 +113,36 @@ number::NumberPtr MetricGaugeLong::getValue() const {
     return val;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// class MetricGaugeFloat:
+//
+
+MetricGaugeFloat::MetricGaugeFloat(const BasicItemReadOnly& info, float val):
+        MetricGauge(info),
+        value_(val) {
+}
+
+number::NumberPtr MetricGaugeFloat::getValue() const {
+    number::NumberPtr val(new number::Float(this->value_));
+    return val;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// class MetricGaugeDouble:
+//
+
+MetricGaugeDouble::MetricGaugeDouble(const BasicItemReadOnly& info, double val):
+        MetricGauge(info),
+        value_(val) {
+}
+
+number::NumberPtr MetricGaugeDouble::getValue() const {
+    number::NumberPtr val(new number::Double(this->value_));
+    return val;
+}
+
 } /* namespace gmf */
