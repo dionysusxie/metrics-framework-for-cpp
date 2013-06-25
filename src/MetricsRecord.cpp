@@ -124,6 +124,15 @@ void MetricsRecordBuilder::addGauge(const BasicItemReadOnly& info, long val) {
     add(new_gauge);
 }
 
+void MetricsRecordBuilder::addGauge(const BasicItemReadOnly& info, float val) {
+    MetricSnapshotPtr new_gauge(new MetricGaugeFloat(info, val));
+    add(new_gauge);
+}
+void MetricsRecordBuilder::addGauge(const BasicItemReadOnly& info, double val) {
+    MetricSnapshotPtr new_gauge(new MetricGaugeDouble(info, val));
+    add(new_gauge);
+}
+
 MetricsRecordPtr MetricsRecordBuilder::getRecord() {
     const time_t time_now = time(NULL);
 

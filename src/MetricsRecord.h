@@ -66,6 +66,8 @@ public:
     void addCounter(const BasicItemReadOnly& info, long val);
     void addGauge(const BasicItemReadOnly& info, int val);
     void addGauge(const BasicItemReadOnly& info, long val);
+    void addGauge(const BasicItemReadOnly& info, float val);
+    void addGauge(const BasicItemReadOnly& info, double val);
 
     MetricsRecordPtr getRecord();
 private:
