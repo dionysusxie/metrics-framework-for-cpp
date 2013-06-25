@@ -13,16 +13,16 @@ namespace number {
 std::ostream& operator << (std::ostream& os, const Number& num) {
     switch (num.type()) {
     case INT:
-        os << num.intValue();
+        os << num.intValue() << "i";
         break;
     case LONG:
-        os << num.longValue();
+        os << num.longValue() << "l";
         break;
     case FLOAT:
-        os << num.floatValue();
+        os << num.floatValue() << "f";
         break;
     case DOUBLE:
-        os << num.doubleValue();
+        os << num.doubleValue() << "d";
         break;
     default:
         BOOST_ASSERT(false);
