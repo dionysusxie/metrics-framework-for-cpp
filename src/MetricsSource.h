@@ -16,8 +16,10 @@ namespace gmf {
 namespace source {
 
 class MetricsSource;
-typedef boost::shared_ptr<MetricsSource> MetricsSourcePtr;
+class Test;
 
+typedef boost::shared_ptr<MetricsSource> MetricsSourcePtr;
+typedef boost::shared_ptr<Test> TestPtr;
 
 class MetricsSource: public BasicItem {
 public:
@@ -34,9 +36,11 @@ class Test: public MetricsSource {
 public:
     Test(const std::string& name = "test");
     virtual ConstMetricsRecordPtr getMetrics();
+    void incrReadTimes();
+    void incrWriteTimes();
 private:
     MutableCounterInt read_times_;
-    MutableCounterInt write_times_;
+    MutableCounterLong write_times_;
 };
 
 } /* namespace source */

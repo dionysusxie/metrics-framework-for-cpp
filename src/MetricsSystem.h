@@ -21,22 +21,17 @@ namespace gmf {
 class MetricsSystem {
 public:
     static boost::shared_ptr<MetricsSystem> getSingleton();
-
 public:
     virtual ~MetricsSystem();
-
+public:
     bool config(StoreConf_SPtr conf);
+    bool registerSource(source::MetricsSourcePtr);
+    void start();
     void stop();
-
     void threadFunc();
-
 private:
     MetricsSystem();
-
-    bool registerSource(source::MetricsSourcePtr);
     bool registerSink(sink::MetricsSinkPtr sink);
-    void registerYourSources();
-
 private:
     static boost::shared_ptr<MetricsSystem> s_pSingleton;
 private:

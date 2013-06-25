@@ -90,6 +90,8 @@ void Ctrl_C::pressCtrlC() {
 // main()
 //
 
+source::TestPtr g_test_src;
+
 void print_usage(const char* program_name) {
     cout << "Usage: " << program_name << " [-h] [-c config_file] [-l log_config_file] [-d]" << endl;
     cout << "Default config_file: " << DEFAULT_CONFIG_FILE << endl;
@@ -97,6 +99,11 @@ void print_usage(const char* program_name) {
 
 void callback() {
     cout << "Hi! This is Dio xie." << endl;
+
+    if (g_test_src.get() != NULL) {
+        g_test_src->incrReadTimes();
+        g_test_src->incrWriteTimes();
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -159,10 +166,20 @@ int main(int argc, char* argv[]) {
             {
                 StoreConf_SPtr metrics_conf;
                 if (conf->getStore(TXT_METRICS, metrics_conf)) {
+                    // config
                     if (!MetricsSystem::getSingleton()->config(metrics_conf)) {
                         LOG_ERROR("Failed to config Metrics System!");
                         goto __end;
                     }
+
+                    // register sources:
+                    {
+                        g_test_src.reset(new source::Test("test01"));
+                        MetricsSystem::getSingleton()->registerSource(g_test_src);
+                    }
+
+                    // start now
+                    MetricsSystem::getSingleton()->start();
                 }
                 else {
                     LOG_ERROR("No config items for Metrics System!");

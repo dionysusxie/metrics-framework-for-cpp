@@ -55,8 +55,14 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
         return false;
     }
 
-    // register sources
-    this->registerYourSources();
+    // config the thread to collecting metrics snapshot
+    {
+        // collecting interval
+        this->metrics_collecting_interval_ = DEF_METRICS_COLLECTING_INTERVAL;
+        conf->getUnsigned(TXT_COLLECT_INTERVAL, this->metrics_collecting_interval_);
+        METRICS_LOG_INFO("%s: %s = %u", COLLECTING_THREAD_NAME.c_str(),
+                TXT_COLLECT_INTERVAL.c_str(), this->metrics_collecting_interval_);
+    }
 
     // register sinks
     {
@@ -79,35 +85,21 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
         }
     }
 
-    // config the thread to collecting metrics snapshot, then start it.
-    {
-        // collecting interval
-        this->metrics_collecting_interval_ = DEF_METRICS_COLLECTING_INTERVAL;
-        conf->getUnsigned(TXT_COLLECT_INTERVAL, this->metrics_collecting_interval_);
-        METRICS_LOG_INFO("%s: %s = %u", COLLECTING_THREAD_NAME.c_str(),
-                TXT_COLLECT_INTERVAL.c_str(), this->metrics_collecting_interval_);
-
-        // start the thread
-        this->metrics_collecting_thread_ = shared_ptr<thread>(new thread(threadStatic, this));
-    }
-
     return true;
-}
-
-void MetricsSystem::registerYourSources() {
-    // Register your metrics sources here!
-
-    source::MetricsSourcePtr src1(new source::Test("test-1"));
-    this->registerSource(src1);
-
-    source::MetricsSourcePtr src2(new source::Test("test-2"));
-    this->registerSource(src2);
 }
 
 // @param  src  A ptr to metrics-source to be registered.
 // @return  true if registered OK, otherwise false.
 // @note  If the name of the source to be registered already exists, false returned.
 bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
+
+    // If the collecting thread existed, return false!
+    if (this->metrics_collecting_thread_.get() != NULL) {
+        METRICS_LOG_ERROR("The metrics collecting thread is already running! You can't config it now.");
+        return false;
+    }
+
     if (src.get() == NULL) {
         const string err("NULL ptr of the metrics-source to be registered!");
         METRICS_LOG_WARNING(err);
@@ -120,13 +112,12 @@ bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
         string err;
         {
             ostringstream os;
-            os << "Source with the name <" << src->getName() << "> already registered!";
+            os << "Source <" << src->getName() << "> already registered!";
             err = os.str();
         }
 
         METRICS_LOG_WARNING(err);
         BOOST_ASSERT_MSG(false, err.c_str());
-
         return false;
     }
 
@@ -136,6 +127,8 @@ bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
 }
 
 bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
+
     if (sink.get() == NULL) {
         METRICS_LOG_WARNING("NULL ptr of the metrics-sink to be registered");
         return false;
@@ -148,8 +141,22 @@ bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
     }
 
     this->sinks_[sink->getName()] = sink;
-
     return true;
+}
+
+void MetricsSystem::start() {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
+
+    // If the collecting thread existed, return!
+    if (this->metrics_collecting_thread_.get() != NULL) {
+        METRICS_LOG_ERROR("The metrics collecting thread is already running! You can't config it now.");
+        BOOST_ASSERT(false);
+        return;
+    }
+
+    // start the thread
+    METRICS_LOG_INFO("system start ...");
+    this->metrics_collecting_thread_ = shared_ptr<thread>(new thread(threadStatic, this));
 }
 
 void MetricsSystem::stop() {

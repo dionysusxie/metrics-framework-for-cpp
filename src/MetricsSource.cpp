@@ -32,8 +32,6 @@ Test::Test(const std::string& name):
         MetricsSource(name, "a metric source for testing", "test"),
         read_times_(BasicItemReadOnly("read_times"), 0),
         write_times_(BasicItemReadOnly("write_times"), 0) {
-    this->read_times_.incr();
-    this->write_times_.incr();
 }
 
 ConstMetricsRecordPtr Test::getMetrics() {
@@ -52,6 +50,14 @@ ConstMetricsRecordPtr Test::getMetrics() {
     }
 
     return record_bulider.getRecord();
+}
+
+void Test::incrReadTimes() {
+    this->read_times_.incr();
+}
+
+void Test::incrWriteTimes() {
+    this->write_times_.incr();
 }
 
 } /* namespace source */
