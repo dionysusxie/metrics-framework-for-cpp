@@ -54,6 +54,32 @@ private:
     long value_;
 };
 
+
+class MetricGauge: public MetricSnapshot {
+public:
+    MetricGauge(const BasicItemReadOnly& info);
+public:
+    virtual MetricType getType() const;
+};
+
+class MetricGaugeInt: public MetricGauge {
+public:
+    MetricGaugeInt(const BasicItemReadOnly& info, int init_val);
+public:
+    virtual number::NumberPtr getValue() const;
+private:
+    int value_;
+};
+
+class MetricGaugeLong: public MetricGauge {
+public:
+    MetricGaugeLong(const BasicItemReadOnly& info, long init_val);
+public:
+    virtual number::NumberPtr getValue() const;
+private:
+    long value_;
+};
+
 } /* namespace gmf */
 
 #endif /* METRICSNAPSHOT_H_ */

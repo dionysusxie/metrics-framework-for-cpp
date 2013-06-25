@@ -114,6 +114,16 @@ void MetricsRecordBuilder::addCounter(const BasicItemReadOnly& info, long val) {
     add(new_counter);
 }
 
+void MetricsRecordBuilder::addGauge(const BasicItemReadOnly& info, int val) {
+    MetricSnapshotPtr new_gauge(new MetricGaugeInt(info, val));
+    add(new_gauge);
+}
+
+void MetricsRecordBuilder::addGauge(const BasicItemReadOnly& info, long val) {
+    MetricSnapshotPtr new_gauge(new MetricGaugeLong(info, val));
+    add(new_gauge);
+}
+
 MetricsRecordPtr MetricsRecordBuilder::getRecord() {
     const time_t time_now = time(NULL);
 

@@ -64,6 +64,8 @@ public:
     void add(MetricSnapshotPtr metric);
     void addCounter(const BasicItemReadOnly& info, int val);
     void addCounter(const BasicItemReadOnly& info, long val);
+    void addGauge(const BasicItemReadOnly& info, int val);
+    void addGauge(const BasicItemReadOnly& info, long val);
 
     MetricsRecordPtr getRecord();
 private:
