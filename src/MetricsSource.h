@@ -41,8 +41,12 @@ public:
 private:
     MutableCounterInt read_times_;
     MutableCounterLong write_times_;
+
     MutableGaugeInt weight_;
+    MutableGaugeLong weight2_;
+
     MutableGaugeFloat height_;
+    MutableGaugeDouble height2_;
 };
 
 } /* namespace source */
