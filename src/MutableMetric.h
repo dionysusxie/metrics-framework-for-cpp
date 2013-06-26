@@ -36,46 +36,23 @@ private:
 // Counter
 //
 
+// Thread safe!
+template<class T>
 class MutableCounter: public MutableMetric {
 public:
-    MutableCounter(const BasicItemReadOnly&);
+    MutableCounter(const BasicItemReadOnly& info, T init_value = 0);
 public:
-    void incr();
-    void incr(number::Number_CRef delta);
-    number::NumberPtr getValue();
+    T value();
+    void incr(T delta = 1);
 protected:
-    virtual void incrImpl() = 0;
-    virtual void incrImpl(number::Number_CRef delta) = 0;
-    virtual number::NumberPtr getValueImpl() = 0;
+    virtual void snapshotImpl(MetricsRecordBuilder& builder);
 private:
+    T value_;
     boost::shared_mutex value_mutex_;
 };
 
-// thread safe!
-class MutableCounterInt: public MutableCounter {
-public:
-    MutableCounterInt(const BasicItemReadOnly& info, int init_value = 0);
-protected:
-    virtual void incrImpl();
-    virtual void incrImpl(number::Number_CRef delta);
-    virtual number::NumberPtr getValueImpl();
-    virtual void snapshotImpl(MetricsRecordBuilder& builder);
-private:
-    int value_;
-};
-
-// thread safe!
-class MutableCounterLong: public MutableCounter {
-public:
-    MutableCounterLong(const BasicItemReadOnly& info, long init_value = 0);
-protected:
-    virtual void incrImpl();
-    virtual void incrImpl(number::Number_CRef delta);
-    virtual number::NumberPtr getValueImpl();
-    virtual void snapshotImpl(MetricsRecordBuilder& builder);
-private:
-    long value_;
-};
+typedef MutableCounter<int> MutableCounterInt;
+typedef MutableCounter<long> MutableCounterLong;
 
 
 //
@@ -99,12 +76,11 @@ private:
     boost::shared_mutex value_mutex_;
 };
 
-#include "MutableMetric.inl"
-
 typedef MutableGauge<int> MutableGaugeInt;
 typedef MutableGauge<long> MutableGaugeLong;
 typedef MutableGauge<float> MutableGaugeFloat;
 typedef MutableGauge<double> MutableGaugeDouble;
 
+#include "MutableMetric.inl"
 } /* namespace gmf */
 #endif /* MUTABLEMETRIC_H_ */

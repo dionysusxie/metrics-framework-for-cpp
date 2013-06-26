@@ -57,8 +57,8 @@ ConstMetricsRecordPtr Test::getMetrics() {
 }
 
 void Test::updateMetrics() {
-    this->read_times_.incr(number::Int(1));
-    this->write_times_.incr(number::Long(2));
+    this->read_times_.incr(1);
+    this->write_times_.incr(2);
     this->weight_.incr(2);
     this->height_.incr();
 }
