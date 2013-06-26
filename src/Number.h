@@ -47,56 +47,34 @@ private:
 };
 
 
-class Int: public Number {
+template<class DATA_TYPE, NumType ENUM_TYPE>
+class NumberTpl: public Number {
 public:
-    Int(int v);
+    NumberTpl(DATA_TYPE val):
+        Number(ENUM_TYPE),
+        value_(val) {
+    }
 public:
-    virtual int intValue() const;
-    virtual long longValue() const;
-    virtual float floatValue() const;
-    virtual double doubleValue() const;
+    virtual int intValue() const {
+        return static_cast<int>(this->value_);
+    }
+    virtual long longValue() const {
+        return static_cast<long>(this->value_);
+    }
+    virtual float floatValue() const {
+        return static_cast<float>(this->value_);
+    }
+    virtual double doubleValue() const {
+        return static_cast<double>(this->value_);
+    }
 private:
-    int value_;
+    DATA_TYPE value_;
 };
 
-
-class Long: public Number {
-public:
-    Long(long v);
-public:
-    virtual int intValue() const;
-    virtual long longValue() const;
-    virtual float floatValue() const;
-    virtual double doubleValue() const;
-private:
-    long value_;
-};
-
-
-class Float: public Number {
-public:
-    Float(float v);
-public:
-    virtual int intValue() const;
-    virtual long longValue() const;
-    virtual float floatValue() const;
-    virtual double doubleValue() const;
-private:
-    float value_;
-};
-
-
-class Double: public Number {
-public:
-    Double(double v);
-public:
-    virtual int intValue() const;
-    virtual long longValue() const;
-    virtual float floatValue() const;
-    virtual double doubleValue() const;
-private:
-    double value_;
-};
+typedef NumberTpl<int, INT> Int;
+typedef NumberTpl<long, LONG> Long;
+typedef NumberTpl<float, FLOAT> Float;
+typedef NumberTpl<double, DOUBLE> Double;
 
 } /* namespace number */
 } /* namespace gmf */
