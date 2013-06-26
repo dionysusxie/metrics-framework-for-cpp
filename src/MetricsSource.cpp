@@ -52,12 +52,12 @@ ConstMetricsRecordPtr Test::getMetrics() {
     return record_bulider.getRecord();
 }
 
-void Test::incrReadTimes() {
-    this->read_times_.incr();
+void Test::incrReadTimes(int delta) {
+    this->read_times_.incr(number::Int(delta));
 }
 
-void Test::incrWriteTimes() {
-    this->write_times_.incr();
+void Test::incrWriteTimes(long delta) {
+    this->write_times_.incr(number::Long(delta));
 }
 
 } /* namespace source */

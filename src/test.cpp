@@ -100,7 +100,7 @@ void print_usage(const char* program_name) {
 void callback() {
     if (g_test_src.get() != NULL) {
         g_test_src->incrReadTimes();
-        g_test_src->incrWriteTimes();
+        g_test_src->incrWriteTimes(2);
     }
 }
 

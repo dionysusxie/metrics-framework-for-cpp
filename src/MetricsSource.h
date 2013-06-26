@@ -35,9 +35,10 @@ protected:
 class Test: public MetricsSource {
 public:
     Test(const std::string& name = "test");
+public:
     virtual ConstMetricsRecordPtr getMetrics();
-    void incrReadTimes();
-    void incrWriteTimes();
+    void incrReadTimes(int delta = 1);
+    void incrWriteTimes(long delta = 1);
 private:
     MutableCounterInt read_times_;
     MutableCounterLong write_times_;
