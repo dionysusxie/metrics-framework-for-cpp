@@ -83,26 +83,29 @@ private:
 // Gauge
 //
 
+// Thread safe!
+template<class T>
 class MutableGauge: public MutableMetric {
 public:
-    MutableGauge(const BasicItemReadOnly& info);
+    MutableGauge(const BasicItemReadOnly& info, T init_value = 0);
 public:
-    number::NumberPtr getValue();
-    void incr();
-    void incr(number::Number_CRef delta);
-    void decr();
-    void decr(number::Number_CRef delta);
-    void set(number::Number_CRef new_value);
+    T value();
+    void incr(T delta = 1);
+    void decr(T delta = 1);
+    void set(T new_value);
 protected:
-    virtual number::NumberPtr getValueImpl() = 0;
-    virtual void incrImpl() = 0;
-    virtual void incrImpl(number::Number_CRef delta) = 0;
-    virtual void decrImpl() = 0;
-    virtual void decrImpl(number::Number_CRef delta) = 0;
-    virtual void setImpl(number::Number_CRef new_value) = 0;
+    virtual void snapshotImpl(MetricsRecordBuilder& builder);
 private:
+    T value_;
     boost::shared_mutex value_mutex_;
 };
+
+#include "MutableMetric.inl"
+
+typedef MutableGauge<int> MutableGaugeInt;
+typedef MutableGauge<long> MutableGaugeLong;
+typedef MutableGauge<float> MutableGaugeFloat;
+typedef MutableGauge<double> MutableGaugeDouble;
 
 } /* namespace gmf */
 #endif /* MUTABLEMETRIC_H_ */

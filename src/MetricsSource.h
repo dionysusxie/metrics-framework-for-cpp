@@ -37,11 +37,12 @@ public:
     Test(const std::string& name = "test");
 public:
     virtual ConstMetricsRecordPtr getMetrics();
-    void incrReadTimes(int delta = 1);
-    void incrWriteTimes(long delta = 1);
+    void updateMetrics();
 private:
     MutableCounterInt read_times_;
     MutableCounterLong write_times_;
+    MutableGaugeInt weight_;
+    MutableGaugeFloat height_;
 };
 
 } /* namespace source */

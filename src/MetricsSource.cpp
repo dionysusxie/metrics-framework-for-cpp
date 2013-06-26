@@ -31,7 +31,9 @@ MetricsSource::~MetricsSource() {
 Test::Test(const std::string& name):
         MetricsSource(name, "a metric source for testing", "test"),
         read_times_(BasicItemReadOnly("read_times"), 0),
-        write_times_(BasicItemReadOnly("write_times"), 0) {
+        write_times_(BasicItemReadOnly("write_times"), 0),
+        weight_(BasicItemReadOnly("weight", "my weight in KG"), 65),
+        height_(BasicItemReadOnly("height", "my height in CM"), 170) {
 }
 
 ConstMetricsRecordPtr Test::getMetrics() {
@@ -47,17 +49,18 @@ ConstMetricsRecordPtr Test::getMetrics() {
     {
         this->read_times_.snapshot(record_bulider);
         this->write_times_.snapshot(record_bulider, true);
+        weight_.snapshot(record_bulider, true);
+        height_.snapshot(record_bulider, true);
     }
 
     return record_bulider.getRecord();
 }
 
-void Test::incrReadTimes(int delta) {
-    this->read_times_.incr(number::Int(delta));
-}
-
-void Test::incrWriteTimes(long delta) {
-    this->write_times_.incr(number::Long(delta));
+void Test::updateMetrics() {
+    this->read_times_.incr(number::Int(1));
+    this->write_times_.incr(number::Long(2));
+    this->weight_.incr(2);
+    this->height_.incr();
 }
 
 } /* namespace source */
