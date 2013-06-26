@@ -8,6 +8,7 @@
 #include <iostream>
 #include <allyes-log.h>
 #include <string>
+#include <vector>
 #include <boost/assert.hpp>
 #include <getopt.h>
 #include <signal.h>
@@ -90,7 +91,7 @@ void Ctrl_C::pressCtrlC() {
 // main()
 //
 
-source::TestPtr g_test_src;
+vector<source::TestPtr> g_test_sources;
 
 void print_usage(const char* program_name) {
     cout << "Usage: " << program_name << " [-h] [-c config_file] [-l log_config_file] [-d]" << endl;
@@ -98,8 +99,11 @@ void print_usage(const char* program_name) {
 }
 
 void callback() {
-    if (g_test_src.get() != NULL) {
-        g_test_src->updateMetrics();
+    for (size_t i = 0; i < g_test_sources.size(); i++) {
+        source::TestPtr ts = g_test_sources[i];
+        if (ts.get() != NULL) {
+            ts->updateMetrics();
+        }
     }
 }
 
@@ -171,8 +175,14 @@ int main(int argc, char* argv[]) {
 
                     // register sources:
                     {
-                        g_test_src.reset(new source::Test("test01"));
-                        MetricsSystem::getSingleton()->registerSource(g_test_src);
+                        source::TestPtr s1(new source::Test("test01"));
+                        source::TestPtr s2(new source::Test("test02"));
+
+                        MetricsSystem::getSingleton()->registerSource(s1);
+                        MetricsSystem::getSingleton()->registerSource(s2);
+
+                        g_test_sources.push_back(s1);
+                        g_test_sources.push_back(s2);
                     }
 
                     // start now
