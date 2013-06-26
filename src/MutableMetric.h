@@ -33,6 +33,10 @@ private:
 };
 
 
+//
+// Counter
+//
+
 class MutableCounter: public MutableMetric {
 public:
     MutableCounter(const BasicItemReadOnly&);
@@ -72,6 +76,32 @@ protected:
     virtual void snapshotImpl(MetricsRecordBuilder& builder);
 private:
     long value_;
+};
+
+
+//
+// Gauge
+//
+
+class MutableGauge: public MutableMetric {
+public:
+    MutableGauge(const BasicItemReadOnly& info);
+public:
+    number::NumberPtr getValue();
+    void incr();
+    void incr(number::Number_CRef delta);
+    void decr();
+    void decr(number::Number_CRef delta);
+    void set(number::Number_CRef new_value);
+protected:
+    virtual number::NumberPtr getValueImpl() = 0;
+    virtual void incrImpl() = 0;
+    virtual void incrImpl(number::Number_CRef delta) = 0;
+    virtual void decrImpl() = 0;
+    virtual void decrImpl(number::Number_CRef delta) = 0;
+    virtual void setImpl(number::Number_CRef new_value) = 0;
+private:
+    boost::shared_mutex value_mutex_;
 };
 
 } /* namespace gmf */

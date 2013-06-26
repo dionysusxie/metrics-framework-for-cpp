@@ -134,6 +134,51 @@ void MutableCounterLong::snapshotImpl(MetricsRecordBuilder& builder) {
     builder.addCounter(this->getReadOnlyItem(), this->getValue()->longValue());
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// class MutableGauge:
+//
+
+MutableGauge::MutableGauge(const BasicItemReadOnly& info):
+        MutableMetric(info) {
+}
+
+number::NumberPtr MutableGauge::getValue() {
+    boost::shared_lock<boost::shared_mutex> read_lock(this->value_mutex_);
+    return this->getValueImpl();
+}
+
+void MutableGauge::incr() {
+    boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
+    this->incrImpl();
+    this->setChanged();
+}
+
+void MutableGauge::incr(number::Number_CRef delta) {
+    boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
+    this->incrImpl(delta);
+    this->setChanged();
+}
+
+void MutableGauge::decr() {
+    boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
+    this->decrImpl();
+    this->setChanged();
+}
+
+void MutableGauge::decr(number::Number_CRef delta) {
+    boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
+    this->decrImpl(delta);
+    this->setChanged();
+}
+
+void MutableGauge::set(number::Number_CRef new_value) {
+    boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
+    this->setImpl(new_value);
+    this->setChanged();
+}
+
 } /* namespace gmf */
 
 
