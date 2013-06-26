@@ -20,13 +20,12 @@ public:
     MutableMetric(const BasicItemReadOnly& info);
     virtual ~MutableMetric();
 public:
-    void snapshot(MetricsRecordBuilder& builder, bool all);
-    void snapshot(MetricsRecordBuilder& builder);
+    void snapshot(MetricsRecordBuilder& builder, bool all = false);
     bool changed();
 protected:
-    virtual void snapshotImpl(MetricsRecordBuilder& builder) = 0;
     void setChanged();
     void clearChanged();
+    virtual void snapshotImpl(MetricsRecordBuilder& builder) = 0;
 private:
     bool changed_;
     boost::shared_mutex changed_mutex_;

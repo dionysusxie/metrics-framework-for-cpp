@@ -30,10 +30,6 @@ void MutableMetric::snapshot(MetricsRecordBuilder& builder, bool all) {
     }
 }
 
-void MutableMetric::snapshot(MetricsRecordBuilder& builder) {
-    this->snapshot(builder, false);
-}
-
 bool MutableMetric::changed() {
     boost::shared_lock<boost::shared_mutex> read_lock(this->changed_mutex_);
     return this->changed_;
