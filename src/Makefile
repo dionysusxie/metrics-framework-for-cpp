@@ -1,8 +1,13 @@
 TARGET = sample
+TARGET_FOR_UNIT_TEST = unit-test
 
-OBJECT_FILES = MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o conf.o \
+NON_MAIN_OBJECT_FILES = MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o conf.o \
 	MetricSnapshot.o MetricsSystem.o MetricsSource.o MetricsSink.o gmf_common.o \
-	Number.o MutableMetric.o sample.o
+	Number.o MutableMetric.o
+
+OBJECT_FILES = $(NON_MAIN_OBJECT_FILES) sample.o
+
+OBJECT_FILES_FOR_UNIT_TEST = Number_unittest.o
 
 LIB_DIR = /usr/local/lib
 
@@ -12,14 +17,25 @@ LDFLAGS = -L$(LIB_DIR)
 LDFLAGS += -lboost_thread -lboost_filesystem -lboost_system -lallyes-log
 LDFLAGS += -Wl,-E
 
+GTEST_LIBS = -lgtest -lgtest_main
+
 CC = g++
 
-.PHONY: clean
+.PHONY: clean test
 
 all: $(TARGET)
 
 $(TARGET): $(OBJECT_FILES)
 	$(CC) -o $(TARGET) $(OBJECT_FILES) $(LDFLAGS)
+	@echo "Build successfully!"
+
+test: $(TARGET_FOR_UNIT_TEST)
+	@echo "\nRun unit test now ..."
+	./$(TARGET_FOR_UNIT_TEST)
+
+$(TARGET_FOR_UNIT_TEST): $(NON_MAIN_OBJECT_FILES) $(OBJECT_FILES_FOR_UNIT_TEST)
+	@echo "This test works right on gtest-1.6.0"
+	$(CC) -o $@ $^ $(LDFLAGS) $(GTEST_LIBS)
 	@echo "Build successfully!"
 
 %.o : %.c
@@ -44,3 +60,4 @@ $(TARGET): $(OBJECT_FILES)
 
 clean:
 	rm -rf $(TARGET) *.o *.d
+	rm -rf $(TARGET_FOR_UNIT_TEST)
