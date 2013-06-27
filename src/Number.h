@@ -55,6 +55,10 @@ public:
         value_(val) {
     }
 public:
+    DATA_TYPE value() const {
+        return value_;
+    }
+
     virtual int intValue() const {
         return static_cast<int>(this->value_);
     }
