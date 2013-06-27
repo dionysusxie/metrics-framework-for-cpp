@@ -7,7 +7,7 @@ NON_MAIN_OBJECT_FILES = MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o
 
 OBJECT_FILES = $(NON_MAIN_OBJECT_FILES) sample.o
 
-OBJECT_FILES_FOR_UNIT_TEST = Number_unittest.o
+OBJECT_FILES_FOR_UNIT_TEST = UnitTest.o Number_unittest.o
 
 LIB_DIR = /usr/local/lib
 
@@ -17,7 +17,7 @@ LDFLAGS = -L$(LIB_DIR)
 LDFLAGS += -lboost_thread -lboost_filesystem -lboost_system -lallyes-log
 LDFLAGS += -Wl,-E
 
-GTEST_LIBS = -lgtest -lgtest_main
+GTEST_LIBS = -lgtest
 
 CC = g++
 
@@ -34,7 +34,7 @@ test: $(TARGET_FOR_UNIT_TEST)
 	./$(TARGET_FOR_UNIT_TEST)
 
 $(TARGET_FOR_UNIT_TEST): $(NON_MAIN_OBJECT_FILES) $(OBJECT_FILES_FOR_UNIT_TEST)
-	@echo "This test works right on gtest-1.6.0"
+	@echo "This test works right on gtest-1.6.0."
 	$(CC) -o $@ $^ $(LDFLAGS) $(GTEST_LIBS)
 	@echo "Build successfully!"
 
