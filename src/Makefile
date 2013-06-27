@@ -1,8 +1,8 @@
-TARGET = test
+TARGET = sample
 
 OBJECT_FILES = MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o conf.o \
 	MetricSnapshot.o MetricsSystem.o MetricsSource.o MetricsSink.o gmf_common.o \
-	Number.o MutableMetric.o test.o
+	Number.o MutableMetric.o sample.o
 
 LIB_DIR = /usr/local/lib
 

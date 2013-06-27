@@ -1,12 +1,12 @@
 /*
- * test.h
+ * sample.h
  *
  *  Created on: Jun 18, 2013
  *      Author: xieliang
  */
 
-#ifndef TEST_H_
-#define TEST_H_
+#ifndef SAMPLE_H_
+#define SAMPLE_H_
 
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
@@ -42,4 +42,4 @@ private:
 };
 
 
-#endif /* TEST_H_ */
+#endif /* SAMPLE_H_ */

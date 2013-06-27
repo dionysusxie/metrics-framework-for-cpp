@@ -12,7 +12,7 @@
 #include <boost/assert.hpp>
 #include <getopt.h>
 #include <signal.h>
-#include "test.h"
+#include "sample.h"
 #include "MetricsSystem.h"
 
 using namespace std;
