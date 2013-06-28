@@ -53,14 +53,14 @@ TEST(NumberTest, Float) {
         const float num = rand() + 0.12345;
 
         Float a(num);
-        EXPECT_TRUE(float_equal(num, a.value()));
-        EXPECT_TRUE(float_equal(a.value(), a.floatValue()));
+        EXPECT_FLOAT_EQ(num, a.value());
+        EXPECT_FLOAT_EQ(a.value(), a.floatValue());
         EXPECT_EQ(FLOAT, a.type());
 
         NumberPtr pnum = Number::newNumber(num);
         ASSERT_TRUE(pnum.get() != NULL);
         EXPECT_EQ(FLOAT, pnum->type());
-        EXPECT_TRUE(float_equal(num, pnum->floatValue()));
+        EXPECT_FLOAT_EQ(num, pnum->floatValue());
     }
 }
 
@@ -70,14 +70,14 @@ TEST(NumberTest, Double) {
         const double num = rand() + 0.12345;
 
         Double a(num);
-        EXPECT_TRUE(float_equal(num, a.value()));
-        EXPECT_TRUE(float_equal(a.value(), a.doubleValue()));
+        EXPECT_DOUBLE_EQ(num, a.value());
+        EXPECT_DOUBLE_EQ(a.value(), a.doubleValue());
         EXPECT_EQ(DOUBLE, a.type());
 
         NumberPtr pnum = Number::newNumber(num);
         ASSERT_TRUE(pnum.get() != NULL);
         EXPECT_EQ(DOUBLE, pnum->type());
-        EXPECT_TRUE(float_equal(num, pnum->doubleValue()));
+        EXPECT_DOUBLE_EQ(num, pnum->doubleValue());
     }
 }
 

@@ -154,8 +154,8 @@ TEST(MetricSnapshotTest, MetricGaugeFloat) {
         {
             ASSERT_TRUE(m.getValue().get() != NULL);
             EXPECT_EQ(number::FLOAT, m.getValue()->type());
-            EXPECT_TRUE(float_equal(num, m.getValue()->floatValue()));
-            EXPECT_TRUE(float_equal(num, m.getRawValue()));
+            EXPECT_FLOAT_EQ(num, m.getValue()->floatValue());
+            EXPECT_FLOAT_EQ(num, m.getRawValue());
         }
     }
 }
@@ -185,8 +185,8 @@ TEST(MetricSnapshotTest, MetricGaugeDouble) {
         {
             ASSERT_TRUE(m.getValue().get() != NULL);
             EXPECT_EQ(number::DOUBLE, m.getValue()->type());
-            EXPECT_TRUE(float_equal(num, m.getValue()->doubleValue()));
-            EXPECT_TRUE(float_equal(num, m.getRawValue()));
+            EXPECT_DOUBLE_EQ(num, m.getValue()->doubleValue());
+            EXPECT_DOUBLE_EQ(num, m.getRawValue());
         }
     }
 }
