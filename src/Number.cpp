@@ -38,6 +38,26 @@ std::ostream& operator << (std::ostream& os, const Number& num) {
 // class Number:
 //
 
+NumberPtr Number::newNumber(int val) {
+    NumberPtr num(new Int(val));
+    return num;
+}
+
+NumberPtr Number::newNumber(long val) {
+    NumberPtr num(new Long(val));
+    return num;
+}
+
+NumberPtr Number::newNumber(float val) {
+    NumberPtr num(new Float(val));
+    return num;
+}
+
+NumberPtr Number::newNumber(double val) {
+    NumberPtr num(new Double(val));
+    return num;
+}
+
 Number::Number(NumType t):
         type_(t) {
 }

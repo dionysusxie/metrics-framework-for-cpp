@@ -33,6 +33,11 @@ extern std::ostream& operator << (std::ostream& os, const Number& num);
 
 class Number {
 public:
+    static NumberPtr newNumber(int);
+    static NumberPtr newNumber(long);
+    static NumberPtr newNumber(float);
+    static NumberPtr newNumber(double);
+public:
     Number(NumType t);
     virtual ~Number();
 public:
