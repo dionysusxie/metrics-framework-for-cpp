@@ -1,5 +1,5 @@
 /*
- * test.cpp
+ * unittest.cpp
  *
  *  For unit tests!
  *
@@ -8,7 +8,7 @@
  */
 
 #include <time.h>       /* time */
-#include "UnitTest.h"
+#include "unittest.h"
 
 int main(int argc, char **argv) {
     // Initialize random number generator

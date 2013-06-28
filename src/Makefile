@@ -7,7 +7,7 @@ NON_MAIN_OBJECT_FILES = MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o
 
 OBJECT_FILES = $(NON_MAIN_OBJECT_FILES) sample.o
 
-OBJECT_FILES_FOR_UNIT_TEST = UnitTest.o Number_unittest.o
+OBJECT_FILES_FOR_UNIT_TEST = unittest.o Number_unittest.o
 
 LIB_DIR = /usr/local/lib
 
@@ -30,8 +30,8 @@ $(TARGET): $(OBJECT_FILES)
 	@echo "Build successfully!"
 
 test: $(TARGET_FOR_UNIT_TEST)
-	@echo "\nRun unit test now ..."
-	./$(TARGET_FOR_UNIT_TEST)
+	@echo ""
+	@./$(TARGET_FOR_UNIT_TEST)
 
 $(TARGET_FOR_UNIT_TEST): $(NON_MAIN_OBJECT_FILES) $(OBJECT_FILES_FOR_UNIT_TEST)
 	@echo "This test works right on gtest-1.6.0."

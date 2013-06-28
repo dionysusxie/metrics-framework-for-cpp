@@ -5,7 +5,7 @@
  *      Author: xieliang
  */
 
-#include "UnitTest.h"
+#include "unittest.h"
 #include "Number.h"
 
 using namespace gmf;
