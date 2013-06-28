@@ -30,52 +30,6 @@ MetricSnapshot::~MetricSnapshot() {
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
-// class MetricCounter:
-//
-
-MetricCounter::MetricCounter(const BasicItemReadOnly& info):
-        MetricSnapshot(info) {
-}
-
-MetricType MetricCounter::getType() const {
-    return gmf::COUNTER;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//
-// class MetricCounterInt:
-//
-
-MetricCounterInt::MetricCounterInt(const BasicItemReadOnly& info, int val):
-        MetricCounter(info),
-        value_(val) {
-}
-
-number::NumberPtr MetricCounterInt::getValue() const {
-    number::NumberPtr val(new number::Int(this->value_));
-    return val;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//
-// class MetricCounterLong:
-//
-
-MetricCounterLong::MetricCounterLong(const BasicItemReadOnly& info, long val):
-        MetricCounter(info),
-        value_(val) {
-}
-
-number::NumberPtr MetricCounterLong::getValue() const {
-    number::NumberPtr val(new number::Long(this->value_));
-    return val;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//
 // class MetricGauge:
 //
 

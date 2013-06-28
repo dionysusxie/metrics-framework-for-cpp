@@ -37,27 +37,29 @@ public:
 // Counter
 //
 
+template <class T>
 class MetricCounter: public MetricSnapshot {
 public:
-    MetricCounter(const BasicItemReadOnly& info);
-    virtual MetricType getType() const;
+    MetricCounter(const BasicItemReadOnly& info, T val):
+        MetricSnapshot(info),
+        value_(val) {
+    }
+public:
+    virtual MetricType getType() const {
+        return gmf::COUNTER;
+    }
+    virtual number::NumberPtr getValue() const {
+        return number::Number::newNumber(value_);
+    }
+    T getRawValue() const {
+        return value_;
+    }
+private:
+    T value_;
 };
 
-class MetricCounterInt: public MetricCounter {
-public:
-    MetricCounterInt(const BasicItemReadOnly& info, int val);
-    virtual number::NumberPtr getValue() const;
-private:
-    int value_;
-};
-
-class MetricCounterLong: public MetricCounter {
-public:
-    MetricCounterLong(const BasicItemReadOnly& info, long val);
-    virtual number::NumberPtr getValue() const;
-private:
-    long value_;
-};
+typedef MetricCounter<int> MetricCounterInt;
+typedef MetricCounter<long> MetricCounterLong;
 
 
 //
