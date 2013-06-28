@@ -21,6 +21,7 @@ TEST(NumberTest, Int) {
 
         EXPECT_EQ(num, a.value());
         EXPECT_EQ(INT, a.type());
+        EXPECT_EQ(a.value(), a.intValue());
     }
 }
 
@@ -32,6 +33,7 @@ TEST(NumberTest, Long) {
 
         EXPECT_EQ(num, a.value());
         EXPECT_EQ(LONG, a.type());
+        EXPECT_EQ(a.value(), a.longValue());
     }
 }
 
@@ -42,6 +44,7 @@ TEST(NumberTest, Float) {
         Float a(num);
 
         EXPECT_TRUE(float_equal(num, a.value()));
+        EXPECT_TRUE(float_equal(a.value(), a.floatValue()));
         EXPECT_EQ(FLOAT, a.type());
     }
 }
@@ -53,6 +56,7 @@ TEST(NumberTest, Double) {
         Double a(num);
 
         EXPECT_TRUE(float_equal(num, a.value()));
+        EXPECT_TRUE(float_equal(a.value(), a.doubleValue()));
         EXPECT_EQ(DOUBLE, a.type());
     }
 }
