@@ -66,48 +66,31 @@ typedef MetricCounter<long> MetricCounterLong;
 // Gauge
 //
 
+template <class T>
 class MetricGauge: public MetricSnapshot {
 public:
-    MetricGauge(const BasicItemReadOnly& info);
+    MetricGauge(const BasicItemReadOnly& info, T val):
+        MetricSnapshot(info),
+        value_(val) {
+    }
 public:
-    virtual MetricType getType() const;
+    virtual MetricType getType() const {
+        return gmf::GAUGE;
+    }
+    virtual number::NumberPtr getValue() const {
+        return number::Number::newNumber(value_);
+    }
+    T getRawValue() const {
+        return value_;
+    }
+private:
+    T value_;
 };
 
-class MetricGaugeInt: public MetricGauge {
-public:
-    MetricGaugeInt(const BasicItemReadOnly& info, int val);
-public:
-    virtual number::NumberPtr getValue() const;
-private:
-    int value_;
-};
-
-class MetricGaugeLong: public MetricGauge {
-public:
-    MetricGaugeLong(const BasicItemReadOnly& info, long val);
-public:
-    virtual number::NumberPtr getValue() const;
-private:
-    long value_;
-};
-
-class MetricGaugeFloat: public MetricGauge {
-public:
-    MetricGaugeFloat(const BasicItemReadOnly& info, float val);
-public:
-    virtual number::NumberPtr getValue() const;
-private:
-    float value_;
-};
-
-class MetricGaugeDouble: public MetricGauge {
-public:
-    MetricGaugeDouble(const BasicItemReadOnly& info, double val);
-public:
-    virtual number::NumberPtr getValue() const;
-private:
-    double value_;
-};
+typedef MetricGauge<int> MetricGaugeInt;
+typedef MetricGauge<long> MetricGaugeLong;
+typedef MetricGauge<float> MetricGaugeFloat;
+typedef MetricGauge<double> MetricGaugeDouble;
 
 } /* namespace gmf */
 
