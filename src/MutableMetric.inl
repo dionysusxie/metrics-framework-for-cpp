@@ -4,19 +4,19 @@
 //
 
 template <class T>
-MutableCounter<T>::MutableCounter(const BasicItemReadOnly& info, T init_value):
+MutableCounter<T>::MutableCounter(const BasicItemReadOnly& info, VALUE_TYPE init_value):
         MutableMetric(info),
         value_(init_value) {
 }
 
 template <class T>
-T MutableCounter<T>::value() {
+typename MutableCounter<T>::VALUE_TYPE MutableCounter<T>::value() {
     boost::shared_lock<boost::shared_mutex> read_lock(this->value_mutex_);
     return value_;
 }
 
 template <class T>
-void MutableCounter<T>::incr(T delta) {
+void MutableCounter<T>::incr(VALUE_TYPE delta) {
     boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
     value_ += delta;
     this->setChanged();
@@ -34,33 +34,33 @@ void MutableCounter<T>::snapshotImpl(MetricsRecordBuilder& builder) {
 //
 
 template <class T>
-MutableGauge<T>::MutableGauge(const BasicItemReadOnly& info, T init_value):
+MutableGauge<T>::MutableGauge(const BasicItemReadOnly& info, VALUE_TYPE init_value):
         MutableMetric(info),
         value_(init_value) {
 }
 
 template <class T>
-T MutableGauge<T>::value() {
+typename MutableGauge<T>::VALUE_TYPE MutableGauge<T>::value() {
     boost::shared_lock<boost::shared_mutex> read_lock(this->value_mutex_);
     return value_;
 }
 
 template <class T>
-void MutableGauge<T>::incr(T delta) {
+void MutableGauge<T>::incr(VALUE_TYPE delta) {
     boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
     value_ += delta;
     this->setChanged();
 }
 
 template <class T>
-void MutableGauge<T>::decr(T delta) {
+void MutableGauge<T>::decr(VALUE_TYPE delta) {
     boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
     value_ -= delta;
     this->setChanged();
 }
 
 template <class T>
-void MutableGauge<T>::set(T new_value) {
+void MutableGauge<T>::set(VALUE_TYPE new_value) {
     boost::lock_guard<boost::shared_mutex> write_lock(this->value_mutex_);
     value_ = new_value;
     this->setChanged();

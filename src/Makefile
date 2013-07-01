@@ -7,7 +7,8 @@ NON_MAIN_OBJECT_FILES = MetricsContext.o MetricsRecord.o BasicItem.o MetricTag.o
 
 OBJECT_FILES = $(NON_MAIN_OBJECT_FILES) sample.o
 
-OBJECT_FILES_FOR_UNIT_TEST = unittest.o Number_unittest.o MetricSnapshot_unittest.o
+OBJECT_FILES_FOR_UNIT_TEST = unittest.o Number_unittest.o MetricSnapshot_unittest.o \
+	MutableMetric_unittest.o
 
 LIB_DIR = /usr/local/lib
 

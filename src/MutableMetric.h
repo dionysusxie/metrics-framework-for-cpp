@@ -40,14 +40,16 @@ private:
 template<class T>
 class MutableCounter: public MutableMetric {
 public:
-    MutableCounter(const BasicItemReadOnly& info, T init_value = 0);
+    typedef T VALUE_TYPE;
 public:
-    T value();
-    void incr(T delta = 1);
+    MutableCounter(const BasicItemReadOnly& info, VALUE_TYPE init_value = 0);
+public:
+    VALUE_TYPE value();
+    void incr(VALUE_TYPE delta = 1);
 protected:
     virtual void snapshotImpl(MetricsRecordBuilder& builder);
 private:
-    T value_;
+    VALUE_TYPE value_;
     boost::shared_mutex value_mutex_;
 };
 
@@ -63,16 +65,18 @@ typedef MutableCounter<long> MutableCounterLong;
 template<class T>
 class MutableGauge: public MutableMetric {
 public:
-    MutableGauge(const BasicItemReadOnly& info, T init_value = 0);
+    typedef T VALUE_TYPE;
 public:
-    T value();
-    void incr(T delta = 1);
-    void decr(T delta = 1);
-    void set(T new_value);
+    MutableGauge(const BasicItemReadOnly& info, VALUE_TYPE init_value = 0);
+public:
+    VALUE_TYPE value();
+    void incr(VALUE_TYPE delta = 1);
+    void decr(VALUE_TYPE delta = 1);
+    void set(VALUE_TYPE new_value);
 protected:
     virtual void snapshotImpl(MetricsRecordBuilder& builder);
 private:
-    T value_;
+    VALUE_TYPE value_;
     boost::shared_mutex value_mutex_;
 };
 
