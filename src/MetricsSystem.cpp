@@ -33,8 +33,7 @@ shared_ptr<MetricsSystem> MetricsSystem::getSingleton() {
     return s_pSingleton;
 }
 
-MetricsSystem::MetricsSystem():
-    has_work_(false) {
+MetricsSystem::MetricsSystem() {
 }
 
 MetricsSystem::~MetricsSystem() {
@@ -181,14 +180,7 @@ void MetricsSystem::stop() {
         }
 
         // awake the sleeping thread
-        {
-            lock_guard<mutex> guard(this->has_work_mutex_);
-            if (!(this->has_work_)) {
-                this->has_work_ = true;
-                this->has_work_cond_.notify_all();
-                METRICS_LOG_INFO("%s: awake the sleeping thread", COLLECTING_THREAD_NAME.c_str());
-            }
-        }
+        // oh, we don't have to do it now!
 
         // wait for the ending of the thread
         {
@@ -199,7 +191,6 @@ void MetricsSystem::stop() {
         // clear
         {
             this->metrics_collecting_thread_.reset();
-
             while (!(this->thread_cmds_.empty())) {
                 this->thread_cmds_.pop();
             }
@@ -226,6 +217,7 @@ void MetricsSystem::stop() {
 void MetricsSystem::threadFunc() {
     METRICS_LOG_INFO("%s: starting ...", COLLECTING_THREAD_NAME.c_str());
 
+    time_t last_work_time = time(NULL);
     bool b_stop = false;
     while(true) {
 
@@ -258,10 +250,29 @@ void MetricsSystem::threadFunc() {
 
 
         //
+        // Is time to work?
+        //
+
+        bool is_time_to_work = false;
+        {
+            time_t now = time(NULL);
+
+            // Has the system time been reset to a earlier time?
+            if (now < last_work_time) {
+                last_work_time = now;
+            }
+            BOOST_ASSERT(now - last_work_time >= 0);
+
+            const unsigned long time_passed_since_last_work = static_cast<unsigned long>(now - last_work_time);
+            is_time_to_work = (time_passed_since_last_work >= this->metrics_collecting_interval_);
+        }
+
+
+        //
         // collect metrics from all registered sources, then push to registered sinks
         //
 
-        {
+        if (is_time_to_work) {
             METRICS_LOG_DEBUG("%s: collect metrics snapshot", COLLECTING_THREAD_NAME.c_str());
 
             // get temporary copys of sources & sinks
@@ -287,22 +298,13 @@ void MetricsSystem::threadFunc() {
                     it != tmp_sinks.end(); it++) {
                 it->second->putMetrics(records);
             }
+
+            // update work time
+            last_work_time = time(NULL);
         }
 
 
-        //
-        // sleep for some time if no work to do
-        //
-
-        {
-            lock_guard<mutex> guard(this->has_work_mutex_);
-            if (!this->has_work_) {
-                const boost::system_time timeout = boost::get_system_time() +
-                        boost::posix_time::seconds(this->metrics_collecting_interval_);
-                this->has_work_cond_.timed_wait(this->has_work_mutex_, timeout);
-                this->has_work_ = false;
-            }
-        }
+        sleep(1); // sleep for 1 second every time!
     }
 
     METRICS_LOG_INFO("%s: stop ...", COLLECTING_THREAD_NAME.c_str());
