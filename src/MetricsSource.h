@@ -43,7 +43,6 @@ private:
     MutableCounterLong write_times_;
 
     MutableGaugeInt weight_;
-    MutableGaugeLong weight2_;
 
     MutableGaugeFloat height_;
     MutableGaugeDouble height2_;

@@ -33,7 +33,6 @@ Test::Test(const std::string& name):
         read_times_(BasicItemReadOnly("read_times"), 0),
         write_times_(BasicItemReadOnly("write_times"), 0),
         weight_(BasicItemReadOnly("weight", "my weight in KG"), 65),
-        weight2_(BasicItemReadOnly("weight2", "my weight in KG"), 65),
         height_(BasicItemReadOnly("height", "my height in CM"), 170),
         height2_(BasicItemReadOnly("height2", "my height in CM"), 170) {
 }
@@ -53,7 +52,6 @@ ConstMetricsRecordPtr Test::getMetrics() {
         this->write_times_.snapshot(record_bulider, true);
 
         weight_.snapshot(record_bulider);
-        weight2_.snapshot(record_bulider);
 
         height_.snapshot(record_bulider);
         height2_.snapshot(record_bulider);
@@ -67,7 +65,6 @@ void Test::updateMetrics() {
     this->write_times_.incr(2);
 
     this->weight_.incr(2);
-    this->weight2_.decr(1);
 
     this->height_.incr();
     this->height2_.decr();
