@@ -27,7 +27,7 @@ public:
     virtual ~MetricsSource();
 
 public:
-    virtual ConstMetricsRecordPtr getMetrics() = 0;
+    virtual ConstMetricsRecordPtr getMetrics(time_t timestamp) = 0;
 protected:
     const std::string context_;
 };
@@ -36,7 +36,7 @@ class Test: public MetricsSource {
 public:
     Test(const std::string& name = "test");
 public:
-    virtual ConstMetricsRecordPtr getMetrics();
+    virtual ConstMetricsRecordPtr getMetrics(time_t timestamp);
     void updateMetrics();
 private:
     MutableCounterInt read_times_;

@@ -287,9 +287,10 @@ void MetricsSystem::threadFunc() {
             // collect metrics snapshot
             std::vector<ConstMetricsRecordPtr> records;
             {
+                const time_t timestamp = time(NULL);
                 for (SOURCE_CONTAINER_T::iterator it = tmp_sources.begin();
                         it != tmp_sources.end(); it++) {
-                    records.push_back(it->second->getMetrics());
+                    records.push_back(it->second->getMetrics(timestamp));
                 }
             }
 

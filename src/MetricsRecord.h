@@ -53,7 +53,7 @@ public:
     typedef std::map<std::string, MetricTagPtr> TAGS_MAP_T;
     typedef std::map<std::string, MetricSnapshotPtr> METRICS_MAP_T;
 public:
-    MetricsRecordBuilder(const std::string& name="", const std::string& desc="", const std::string& ctx="");
+    MetricsRecordBuilder(time_t t, const std::string& name="", const std::string& desc="", const std::string& ctx="");
     ~MetricsRecordBuilder();
 public:
     void setContext(const std::string& ctx);
@@ -71,6 +71,7 @@ public:
 
     MetricsRecordPtr getRecord();
 private:
+    time_t timestamp_;
     std::string context_;
     TAGS_MAP_T tags_;
     METRICS_MAP_T metrics_;

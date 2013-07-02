@@ -51,8 +51,9 @@ MetricsRecord::METRIC_SNAPSHOT_VEC MetricsRecord::getMetrics() const {
 // class MetricsRecordBuilder:
 //
 
-MetricsRecordBuilder::MetricsRecordBuilder(const string& name, const string& desc, const string& ctx):
+MetricsRecordBuilder::MetricsRecordBuilder(time_t t, const string& name, const string& desc, const string& ctx):
         BasicItem(name, desc),
+        timestamp_(t),
         context_(ctx) {
 
 }
@@ -134,8 +135,6 @@ void MetricsRecordBuilder::addGauge(const BasicItemReadOnly& info, double val) {
 }
 
 MetricsRecordPtr MetricsRecordBuilder::getRecord() {
-    const time_t time_now = time(NULL);
-
     MetricsRecord::TAG_VECTOR tag_vec;
     {
         tag_vec.reserve(this->tags_.size());
@@ -152,7 +151,7 @@ MetricsRecordPtr MetricsRecordBuilder::getRecord() {
         }
     }
 
-    MetricsRecordPtr record(new MetricsRecord(this->getReadOnlyItem(), this->context_, time_now, tag_vec, metric_snapshot_vec));
+    MetricsRecordPtr record(new MetricsRecord(this->getReadOnlyItem(), this->context_, this->timestamp_, tag_vec, metric_snapshot_vec));
     return record;
 }
 

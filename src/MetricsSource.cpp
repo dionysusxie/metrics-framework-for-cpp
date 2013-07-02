@@ -37,8 +37,8 @@ Test::Test(const std::string& name):
         height2_(BasicItemReadOnly("height2", "my height in CM"), 170) {
 }
 
-ConstMetricsRecordPtr Test::getMetrics() {
-    MetricsRecordBuilder record_bulider(this->getName(), this->getDescription(), this->context_);
+ConstMetricsRecordPtr Test::getMetrics(time_t timestamp) {
+    MetricsRecordBuilder record_bulider(timestamp, this->getName(), this->getDescription(), this->context_);
 
     // add some tags
     {
