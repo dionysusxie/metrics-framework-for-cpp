@@ -24,7 +24,7 @@ public:
 public:
     virtual ~MetricsSystem();
 public:
-    bool config(StoreConf_SPtr conf);
+    void config(StoreConf_SPtr conf);
     void registerSource(source::MetricsSourcePtr);
     void start();
     void stop();

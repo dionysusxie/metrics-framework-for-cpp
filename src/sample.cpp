@@ -167,11 +167,7 @@ int main(int argc, char* argv[]) {
             {
                 StoreConf_SPtr metrics_conf;
                 if (conf->getStore(TXT_METRICS, metrics_conf)) {
-                    // config
-                    if (!MetricsSystem::getSingleton()->config(metrics_conf)) {
-                        LOG_ERROR("Failed to config Metrics System!");
-                        goto __end;
-                    }
+                    MetricsSystem::getSingleton()->config(metrics_conf);
 
                     // register sources:
                     {

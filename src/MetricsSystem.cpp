@@ -39,19 +39,20 @@ MetricsSystem::MetricsSystem() {
 MetricsSystem::~MetricsSystem() {
 }
 
-bool MetricsSystem::config(StoreConf_SPtr conf) {
+void MetricsSystem::config(StoreConf_SPtr conf) {
     boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
     METRICS_LOG_INFO("Begin to config the metrics system");
 
     // pre-assertions:
-    {
-        BOOST_ASSERT_MSG(conf.get() != NULL, "Null config found in MetricsSystem::config()");
+    if (conf.get() == NULL) {
+        BOOST_ASSERT_MSG(false, "Null config found in MetricsSystem::config()");
+        return;
     }
 
-    // If the collecting thread existed, return false!
+    // If the collecting thread existed, FAIL!
     if (this->metrics_collecting_thread_.get() != NULL) {
-        METRICS_LOG_ERROR("The metrics collecting thread is already running! You can't config it now.");
-        return false;
+        BOOST_ASSERT_MSG(false, "The metrics collecting thread is already running! You can't config it now.");
+        return;
     }
 
     // config the thread to collecting metrics snapshot
@@ -83,8 +84,6 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
             }
         }
     }
-
-    return true;
 }
 
 // @param  src  A ptr to metrics-source to be registered.
