@@ -21,6 +21,7 @@ using namespace gmf;
 
 const string DEFAULT_CONFIG_FILE("/etc/test/test.conf");
 const string TXT_METRICS = "metrics";
+const string TXT_GMF_CONF_FILE = "gmf_conf_file";
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -76,6 +77,12 @@ void Ctrl_C::run() {
                 run = false;
             }
         }
+    }
+
+    // reset the flat of 'exit'
+    {
+        boost::lock_guard<mutex> lock(this->exit_mutex_);
+        exit_now_ = false;
     }
 }
 
@@ -153,6 +160,7 @@ int main(int argc, char* argv[]) {
         }
 
         // config
+        string gmf_conf_file;
         {
             LOG_INFO("Begin to config");
 
@@ -165,9 +173,8 @@ int main(int argc, char* argv[]) {
 
             // config metrics system
             {
-                StoreConf_SPtr metrics_conf;
-                if (conf->getStore(TXT_METRICS, metrics_conf)) {
-                    MetricsSystem::getSingleton()->config(metrics_conf);
+                if (conf->getString(TXT_GMF_CONF_FILE, gmf_conf_file)) {
+                    MetricsSystem::getSingleton()->config(gmf_conf_file);
 
                     // register sources:
                     {
@@ -194,9 +201,15 @@ int main(int argc, char* argv[]) {
         // run until the user interrupt it by pressing Ctrl + C
         Ctrl_C::getSingleton()->registerCallback(callback);
         Ctrl_C::getSingleton()->run();
-
-        // close the Metrics System before exiting
         MetricsSystem::getSingleton()->stop();
+
+        // testing codes: reopen the system!
+        {
+            MetricsSystem::getSingleton()->config(gmf_conf_file);
+            MetricsSystem::getSingleton()->start();
+            Ctrl_C::getSingleton()->run();
+            MetricsSystem::getSingleton()->stop();
+        }
     }
     catch(const std::exception& e) {
         LOG_ERROR("Exception in main: %s", e.what());

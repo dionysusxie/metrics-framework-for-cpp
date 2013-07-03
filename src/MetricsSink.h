@@ -32,6 +32,7 @@ public:
     std::string getType();
 
     void config(StoreConf_SPtr conf);
+    void open();
     void close();
     void putMetrics(const std::vector<ConstMetricsRecordPtr>& records);
 
@@ -43,6 +44,7 @@ public:
 
 protected:
     virtual void configImpl(StoreConf_SPtr conf) = 0;
+    virtual void openImpl() = 0;
     virtual void closeImpl() = 0;
     virtual void consumeRecords(RECORDS_QUEUE_PTR) = 0;
 
@@ -51,6 +53,7 @@ private:
     boost::recursive_timed_mutex public_mutex_;
 
     const std::string type_;
+    bool configed_;
 
     // Queue of metrics records;
     // New metrics records would be lost if the queue is full.
@@ -84,6 +87,7 @@ public:
     SinkToConsole();
 protected:
     virtual void configImpl(StoreConf_SPtr conf);
+    virtual void openImpl();
     virtual void closeImpl();
     virtual void consumeRecords(RECORDS_QUEUE_PTR);
 };

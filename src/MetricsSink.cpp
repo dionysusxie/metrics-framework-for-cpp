@@ -33,7 +33,7 @@ static const long SEC_TO_WAIT_FOR_FILL_SINK_QUEUE = 1;
         sink.reset(new SinkToConsole());
     }
     else {
-        const string fail_msg = "Invalid sink type: " + type;
+        const string fail_msg = "Invalid sink type <" + type + ">";
         METRICS_LOG_ERROR(fail_msg);
         BOOST_ASSERT_MSG(false, fail_msg.c_str());
         return NULL_PTR;
@@ -50,7 +50,8 @@ static void threadStatic(MetricsSink* ptr) {
 
 MetricsSink::MetricsSink(const std::string& type):
     BasicItem(),
-    type_(type) {
+    type_(type),
+    configed_(false) {
     this->has_work_ = false;
 }
 
@@ -98,6 +99,36 @@ void MetricsSink::config(StoreConf_SPtr conf) {
 
     // config the derived class
     this->configImpl(conf);
+
+    // set flag
+    configed_ = true;
+}
+
+void MetricsSink::open() {
+    boost::lock_guard<recursive_timed_mutex> lock(this->public_mutex_);
+
+    // Has this sink been configed?
+    if (!configed_) {
+        BOOST_ASSERT_MSG(false, "You can't open a sink not configed yet!");
+        return;
+    }
+
+    // You can open it only when the sink thread has been stopped.
+    if (this->sink_thread_.get() != NULL) {
+        string err;
+        {
+            ostringstream os;
+            os << "You can open " << this->getName() << " only when its thread has been stopped";
+            err = os.str();
+        }
+
+        METRICS_LOG_ERROR(err);
+        BOOST_ASSERT_MSG(false, err.c_str());
+        return;
+    }
+
+    // open the derived class
+    this->openImpl();
 
     // start the sink thread
     this->sink_thread_ = shared_ptr<thread>(new thread(threadStatic, this));
@@ -272,6 +303,10 @@ SinkToConsole::SinkToConsole():
 
 void SinkToConsole::configImpl(StoreConf_SPtr conf) {
 
+}
+
+void SinkToConsole::openImpl() {
+    METRICS_LOG_INFO("%s: open %s", this->getName().c_str(), TYPE_TXT.c_str());
 }
 
 void SinkToConsole::closeImpl() {

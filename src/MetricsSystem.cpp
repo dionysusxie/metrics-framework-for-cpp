@@ -39,6 +39,19 @@ MetricsSystem::MetricsSystem() {
 MetricsSystem::~MetricsSystem() {
 }
 
+void MetricsSystem::config(const std::string& conf_file) {
+    boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
+
+    StoreConf_SPtr conf(new StoreConf);
+    if (!conf->parseConfig(conf_file)) {
+        METRICS_LOG_ERROR("Failed to parse the config file: %s", conf_file.c_str());
+        BOOST_ASSERT(false);
+        return;
+    }
+
+    config(conf);
+}
+
 void MetricsSystem::config(StoreConf_SPtr conf) {
     boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
     METRICS_LOG_INFO("Begin to config the metrics system");
@@ -66,9 +79,11 @@ void MetricsSystem::config(StoreConf_SPtr conf) {
 
     // register sinks
     {
+        // clear first!
+        this->sinks_.clear();
+
         std::vector<StoreConf_SPtr> conf_stores;
         conf->getAllStores(conf_stores);
-
         for (vector<StoreConf_SPtr>::iterator it = conf_stores.begin();
                 it != conf_stores.end(); it++) {
             StoreConf_SPtr conf_item = *it;
@@ -150,8 +165,13 @@ void MetricsSystem::start() {
         return;
     }
 
-    // start the thread
-    METRICS_LOG_INFO("system start ...");
+    // open the sinks
+    for (SINK_CONTAINER_T::iterator it = this->sinks_.begin();
+            it != this->sinks_.end(); it++) {
+        it->second->open();
+    }
+
+    // start the collecting thread
     this->metrics_collecting_thread_ = shared_ptr<thread>(new thread(threadStatic, this));
 }
 
@@ -160,11 +180,7 @@ void MetricsSystem::stop() {
 
     METRICS_LOG_INFO("system stop ...");
 
-
-    //
     // stop the thread of collecting metrics
-    //
-
     if (this->metrics_collecting_thread_.get() == NULL) {
         METRICS_LOG_WARNING("%s: already stopped", COLLECTING_THREAD_NAME.c_str());
     }
@@ -194,20 +210,10 @@ void MetricsSystem::stop() {
         }
     }
 
-
-    // clear sources
-    {
-        this->sources_.clear();
-    }
-
-    // stop sinks
-    {
-        for (SINK_CONTAINER_T::iterator it = this->sinks_.begin();
-                it != this->sinks_.end(); it++) {
-            it->second->close();
-        }
-
-        this->sinks_.clear();
+    // close sinks
+    for (SINK_CONTAINER_T::iterator it = this->sinks_.begin();
+            it != this->sinks_.end(); it++) {
+        it->second->close();
     }
 }
 
