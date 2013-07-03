@@ -25,7 +25,7 @@ public:
     virtual ~MetricsSystem();
 public:
     bool config(StoreConf_SPtr conf);
-    bool registerSource(source::MetricsSourcePtr);
+    void registerSource(source::MetricsSourcePtr);
     void start();
     void stop();
     void threadFunc();

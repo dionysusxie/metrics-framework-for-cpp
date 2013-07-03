@@ -88,22 +88,21 @@ bool MetricsSystem::config(StoreConf_SPtr conf) {
 }
 
 // @param  src  A ptr to metrics-source to be registered.
-// @return  true if registered OK, otherwise false.
-// @note  If the name of the source to be registered already exists, false returned.
-bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
+// @note  If the name of the source to be registered already exists, fail!
+void MetricsSystem::registerSource(source::MetricsSourcePtr src) {
     boost::lock_guard<recursive_timed_mutex> lock(this->common_mutex_);
 
-    // If the collecting thread existed, return false!
+    // If the collecting thread existed, FAIL!
     if (this->metrics_collecting_thread_.get() != NULL) {
-        METRICS_LOG_ERROR("The metrics collecting thread is already running! You can't config it now.");
-        return false;
+        BOOST_ASSERT_MSG(false, "The metrics collecting thread is already running! You can't register source now.");
+        return;
     }
 
     if (src.get() == NULL) {
         const string err("NULL ptr of the metrics-source to be registered!");
         METRICS_LOG_WARNING(err);
         BOOST_ASSERT_MSG(false, err.c_str());
-        return false;
+        return;
     }
 
     bool registered_already = this->sources_.count(src->getName()) > 0;
@@ -117,12 +116,11 @@ bool MetricsSystem::registerSource(source::MetricsSourcePtr src) {
 
         METRICS_LOG_WARNING(err);
         BOOST_ASSERT_MSG(false, err.c_str());
-        return false;
+        return;
     }
 
     this->sources_[src->getName()] = src;
     METRICS_LOG_INFO("Register source %s: %s", src->getName().c_str(), src->getDescription().c_str());
-    return true;
 }
 
 bool MetricsSystem::registerSink(sink::MetricsSinkPtr sink) {
